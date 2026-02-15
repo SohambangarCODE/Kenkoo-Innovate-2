@@ -90,20 +90,20 @@ const Profile = () => {
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 py-8 px-4 md:px-8">
+    <div className="h-full overflow-y-auto bg-gray-50 py-6 px-4 md:py-8 md:px-8">
       <div className="max-w-5xl mx-auto">
         
         {/* Header Section */}
         <div 
-          className="relative rounded-3xl overflow-hidden shadow-xl mb-8"
+          className="relative rounded-3xl overflow-hidden shadow-xl mb-6 md:mb-8"
           style={{ background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, ${SECONDARY_COLOR} 100%)` }}
         >
           <div className="absolute inset-0 bg-white/10 opacity-30 pattern-grid-lg"></div>
-          <div className="relative px-8 py-10 md:py-14 text-white flex flex-col md:flex-row items-center md:items-end gap-6">
+          <div className="relative px-6 py-8 md:px-8 md:py-14 text-white flex flex-col md:flex-row items-center md:items-end gap-6">
             
             {/* Avatar */}
             <div className="relative group">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
+              <div className="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
                 <img 
                   src={user?.profileImage || "https://ui-avatars.com/api/?name=User&background=random"} 
                   alt="Profile" 

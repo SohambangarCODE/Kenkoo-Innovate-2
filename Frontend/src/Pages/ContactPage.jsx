@@ -55,13 +55,13 @@ function ContactPage() {
 
   return (
     <div className="min-h-screen bg-white text-black">
-      <div className="container mx-auto px-4 py-2">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-[#3C53E8] mb-5 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#3C53E8] mb-8 text-center">
             Contact Us
           </h1>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-[#05395e] rounded-lg shadow-xl p-8 border border-[#05395e]/80 transform transition-all duration-300">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+            <div className="bg-[#05395e] rounded-lg shadow-xl p-6 md:p-8 border border-[#05395e]/80 transform transition-all duration-300">
               <h2 className="text-2xl font-semibold text-[#38b6ff] mb-6">
                 Get in Touch
               </h2>

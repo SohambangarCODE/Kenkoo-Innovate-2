@@ -221,7 +221,8 @@ function Navbar() {
             ) : (
                <Link
                 to="/login"
-                className="ml-2 px-6 py-2.5 rounded-2xl bg-[#05395e] text-white font-bold hover:bg-[#032b48] transition-all shadow-md active:scale-95"
+                className="ml-2 px-6 py-2.5 rounded-2xl bg-[#1447E6] text-white font-bold hover:bg-[#032b48] hover:-translate-y-1 transition-all duration-200 rounded-2xl
+  border-t-2 border-l-2 border-b-4 border-r-4 border-slate-900 hover:bg-blue-700 shadow-md active:scale-95"
               >
                 Login
               </Link>

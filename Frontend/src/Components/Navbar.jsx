@@ -89,7 +89,7 @@ function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
+      className={`sticky top-0 z-50 transition-all duration-300 px-3 ${
         isScrolled
           ? "bg-white/40 backdrop-blur-md shadow-md border-b border-[#b4b4b4]/30"
           : "bg-white shadow-sm border-b border-[#b4b4b4]/30"

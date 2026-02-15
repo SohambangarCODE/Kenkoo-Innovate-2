@@ -1,8 +1,15 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+// ensure uploads folder exists
+const uploadDir = "uploads/";
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
 
 const storage = multer.diskStorage({
-  destination: "uploads/",
+  destination: uploadDir,
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
@@ -10,7 +17,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 25 * 1024 * 1024 } // 25MB
+
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB
+
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+    ];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only PDF and images allowed."), false);
+    }
+  },
 });
 
 module.exports = upload;

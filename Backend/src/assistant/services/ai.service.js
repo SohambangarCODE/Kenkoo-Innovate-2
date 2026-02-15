@@ -5,26 +5,36 @@ const model = new ChatGoogleGenerativeAI({
   apiKey: process.env.GEMINI_API_KEY,
 });
 
-const analyzeMedicalReport = async (text) => {
+const analyzeMedicalReport = async (text, question = null) => {
   const prompt = `
 You are a medical AI assistant.
 
-Analyze this medical report and return ONLY JSON:
+Analyze the medical report.
+
+Return ONLY JSON:
 
 {
   "patient_name": "",
   "diagnosis": "",
   "abnormal_values": [],
   "risk_level": "",
-  "summary": ""
+  "summary": "",
+  "answer_to_user": ""
 }
+
+User Question: ${question || "No question asked"}
 
 Report:
 ${text}
 `;
 
   const response = await model.invoke(prompt);
-  return response.content;
+
+  try {
+    return JSON.parse(response.content);
+  } catch {
+    return { raw: response.content };
+  }
 };
 
 module.exports = analyzeMedicalReport;

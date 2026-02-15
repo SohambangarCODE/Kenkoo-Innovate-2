@@ -1,6 +1,6 @@
 const fs = require("fs");
-const extractText = require("../services/parser.service");
-const analyzeMedicalReport = require("../services/ai.service");
+const extractText = require("./services/parser.service");
+const analyzeMedicalReport = require("./services/ai.service");
 
 const uploadFile = async (req, res) => {
   try {
@@ -10,9 +10,14 @@ const uploadFile = async (req, res) => {
 
     const filePath = req.file.path;
 
+    // ✅ get optional user question
+    const userPrompt = req.body.message || "";
+
     const text = await extractText(filePath);
 
-    const analysis = await analyzeMedicalReport(text);
+     // send both text + prompt to AI
+    const analysis = await analyzeMedicalReport(text, req.body.question);
+
 
     fs.unlinkSync(filePath); // delete file after processing
 

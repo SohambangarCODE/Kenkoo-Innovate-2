@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 
 const API_CHAT_URL = "/api/assistant/chat";
-const API_UPLOAD_URL = "/api/assistant/upload";
+const API_UPLOAD_URL = "/api/upload";
+
 
 const Assistant = () => {
   const [messages, setMessages] = useState([]);
@@ -79,48 +80,55 @@ const Assistant = () => {
   };
 
   const analyzeFile = async () => {
-    if (!file || isLoading) return;
+  if (!file || isLoading) return;
 
-    setIsLoading(true);
-    
-    // Show file upload message
-    setMessages((prev) => [...prev, { 
-        role: "user", 
-        type: "file", 
-        content: `Uploaded: ${file.name}`,
-        fileName: file.name 
-    }]);
+  setIsLoading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const userPrompt = input.trim();
 
-    try {
-      const res = await fetch(API_UPLOAD_URL, {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      const result = data?.result || "File processed successfully.";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: result },
-      ]);
-      clearFile();
-    } catch {
-       // Dummy fallback
-       setTimeout(() => {
-          setMessages((prev) => [
-            ...prev,
-            { role: "assistant", content: `I've analyzed ${file.name}. It looks good! (Dummy response)` },
-          ]);
-          clearFile();
-      }, 1000);
-    } finally {
-      setIsLoading(false);
+  // show file message in chat
+  setMessages(prev => [
+    ...prev,
+    {
+      role: "user",
+      type: "file",
+      content: userPrompt || `Uploaded: ${file.name}`,
+      fileName: file.name
     }
-  };
+  ]);
+
+  setInput("");
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("message", userPrompt); // <-- send prompt too
+
+  try {
+    const res = await fetch(API_UPLOAD_URL, {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+
+    setMessages(prev => [
+      ...prev,
+      { role: "assistant", content: data.result }
+    ]);
+
+    clearFile();
+  } catch (err) {
+    console.error(err);
+
+    setMessages(prev => [
+      ...prev,
+      { role: "assistant", content: "File analysis failed." }
+    ]);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -167,7 +175,7 @@ const Assistant = () => {
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
                     msg.role === "user" ? "bg-blue-600 text-white" : " text-black"
                 }`}>
-                    {msg.role === "user" ? <i class="ri-robot-2-fill"></i> : <i class="ri-robot-2-fill"></i>}
+                    {msg.role === "user" ? <i className="ri-robot-2-fill"></i> : <i className="ri-robot-2-fill"></i>}
                 </div>
 
                 {/* Message Bubble */}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import Swal from 'sweetalert2'
+import FooterForAssistance from "../Components/FooterForAssistance";
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -289,6 +290,7 @@ function ContactPage() {
         </div>
       </div>
     </div>
+    
   );
 }
 

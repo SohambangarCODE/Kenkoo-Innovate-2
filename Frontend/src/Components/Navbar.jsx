@@ -158,40 +158,40 @@ function Navbar() {
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              Home
+              Assistant
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full  transform transition-all duration-300 opacity-0 group-hover:opacity-100 group-hover:translate-x-0"></div>
             </NavLink>
             <NavLink
-              to="/consultancy"
+              to="/Records"
               className={linkClass}
               style={navItemStyle}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              Consultancy
+              Records
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
             <NavLink
-              to="/scanner"
+              to="/Insights"
               className={linkClass}
               style={navItemStyle}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              Scanner
+              Insights
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full  transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
             <NavLink
-              to="/dicom"
+              to="/careplan"
               className={linkClass}
               style={navItemStyle}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
-              DICOM
+              Care Plan
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full  transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="/about"
               className={linkClass}
               style={navItemStyle}
@@ -200,7 +200,7 @@ function Navbar() {
             >
               About Us
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
-            </NavLink>
+            </NavLink> */}
             <NavLink
               to="/contact"
               className={linkClass}
@@ -209,6 +209,16 @@ function Navbar() {
               onMouseLeave={handleMouseLeave}
             >
               Contact Us
+              <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
+            </NavLink>
+            <NavLink
+              to="/profile"
+              className={linkClass}
+              style={navItemStyle}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
+              Your Profile
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
             {/* <Link
@@ -237,42 +247,49 @@ function Navbar() {
               end
               onClick={handleLinkClick}
             >
-              Home
+              Assistant
             </NavLink>
             <NavLink
-              to="/consultancy"
+              to="/Records"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
               onClick={handleLinkClick}
             >
-              Consultancy
+              Records
             </NavLink>
             <NavLink
-              to="/scanner"
+              to="/Insights"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
               onClick={handleLinkClick}
             >
-              Scanner
+              Insights
             </NavLink>
             <NavLink
-              to="/dicom"
+              to="/careplan"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
               onClick={handleLinkClick}
             >
-              DICOM
+              Care Plan
             </NavLink>
-            <NavLink
+            {/* <NavLink
               to="/about"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
               onClick={handleLinkClick}
             >
               About Us
-            </NavLink>
+            </NavLink> */}
             <NavLink
               to="/contact"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
               onClick={handleLinkClick}
             >
               Contact Us
+            </NavLink>
+            <NavLink
+              to="/profile"
+              className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
+              onClick={handleLinkClick}
+            >
+              Your Profile
             </NavLink>
           </div>
         </div>

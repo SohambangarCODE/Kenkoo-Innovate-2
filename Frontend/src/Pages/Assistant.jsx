@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import FooterForAssistance from "../Components/FooterForAssistance";
 
 const API_CHAT_URL = "/api/assistant/chat";
 const API_UPLOAD_URL = "/api/upload";
-
 
 const Assistant = () => {
   const [messages, setMessages] = useState([]);
@@ -62,7 +62,10 @@ const Assistant = () => {
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", content: "I'm currently in offline mode. I received: " + trimmed },
+          {
+            role: "assistant",
+            content: "I'm currently in offline mode. I received: " + trimmed,
+          },
         ]);
       }, 800);
     } finally {
@@ -89,14 +92,14 @@ const Assistant = () => {
     const userPrompt = input.trim();
 
     // show file message in chat
-    setMessages(prev => [
+    setMessages((prev) => [
       ...prev,
       {
         role: "user",
         type: "file",
         content: userPrompt || `Uploaded: ${file.name}`,
-        fileName: file.name
-      }
+        fileName: file.name,
+      },
     ]);
 
     setInput("");
@@ -108,29 +111,28 @@ const Assistant = () => {
     try {
       const res = await fetch(API_UPLOAD_URL, {
         method: "POST",
-        body: formData
+        body: formData,
       });
 
       const data = await res.json();
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: data.result }
+        { role: "assistant", content: data.result },
       ]);
 
       clearFile();
     } catch (err) {
       console.error(err);
 
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "File analysis failed." }
+        { role: "assistant", content: "File analysis failed." },
       ]);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -143,24 +145,44 @@ const Assistant = () => {
     }
   };
 
+  const inputAreaRef = useRef(null);
+
+  useEffect(() => {
+    if (!inputAreaRef.current) return;
+
+    const height = inputAreaRef.current.offsetHeight;
+    // You can set a css variable or just use inline style
+    document.documentElement.style.setProperty(
+      "--input-height",
+      `${height + 20}px`,
+    );
+  }, [file, input]); // re-measure when file preview appears / text grows
+
   return (
     // Main Container: Fills available height between Navbar and Footer
     // h-[calc(100vh-130px)] accounts for Navbar (~70px) + Footer (~60px)
     <div className="flex flex-col h-[calc(100vh-130px)] bg-gray-50">
-
       {/* Chat Scroll Area */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
+      {/* <div className="flex-1 overflow-y-auto p-4 md:p-6 pb-[180px] md:pb-[200px] scroll-smooth"> */}
+      <div
+        className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth"
+        style={{ paddingBottom: "var(--input-height, 180px)" }}
+      >
         <div className="max-w-3xl mx-auto space-y-6">
-
           {/* Empty State */}
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-[60vh] text-center text-gray-500">
+            <div className="flex flex-col items-center justify-center h-[30vh] text-center text-gray-500">
               <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-4">
-                <span className="text-3xl"><img src="/logo.png-removebg-preview.png" alt="" /></span>
+                <span className="text-3xl">
+                  <img src="/logo.png-removebg-preview.png" alt="" />
+                </span>
               </div>
-              <h2 className="text-xl font-semibold text-gray-800">Kenkoo Assistant</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Kenkoo Assistant
+              </h2>
               <p className="mt-2 text-sm text-gray-500 max-w-xs">
-                Ask about your health records, care plan, or upload documents for analysis.
+                Ask about your health records, care plan, or upload documents
+                for analysis.
               </p>
             </div>
           )}
@@ -171,27 +193,40 @@ const Assistant = () => {
               key={idx}
               className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div className={`flex max-w-[85%] md:max-w-[75%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}>
-
+              <div
+                className={`flex max-w-[85%] md:max-w-[75%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+              >
                 {/* Avatar */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${msg.role === "user" ? "bg-blue-600 text-white" : " text-black"
-                  }`}>
-                  {msg.role === "user" ? <i className="ri-robot-2-fill"></i> : <i className="ri-robot-2-fill"></i>}
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
+                    msg.role === "user"
+                      ? "bg-blue-600 text-white"
+                      : " text-black"
+                  }`}
+                >
+                  {msg.role === "user" ? (
+                    <i className="ri-robot-2-fill"></i>
+                  ) : (
+                    <i className="ri-robot-2-fill"></i>
+                  )}
                 </div>
 
                 {/* Message Bubble */}
                 <div
-                  className={`px-5 py-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${msg.role === "user"
-                    ? "bg-blue-600 text-white rounded-tr-none"
-                    : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"
-                    }`}
+                  className={`px-5 py-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${
+                    msg.role === "user"
+                      ? "bg-blue-600 text-white rounded-tr-none"
+                      : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"
+                  }`}
                 >
                   {msg.type === "file" ? (
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 bg-white/20 rounded-lg">
                         <i className="ri-file-text-line text-lg"></i>
                       </div>
-                      <span className="font-medium truncate">{msg.fileName}</span>
+                      <span className="font-medium truncate">
+                        {msg.fileName}
+                      </span>
                     </div>
                   ) : (
                     <div className="prose prose-sm max-w-none">
@@ -200,17 +235,26 @@ const Assistant = () => {
                         components={{
                           table: ({ node, ...props }) => (
                             <div className="overflow-x-auto my-4 border border-gray-200 rounded-lg">
-                              <table className="min-w-full divide-y divide-gray-200" {...props} />
+                              <table
+                                className="min-w-full divide-y divide-gray-200"
+                                {...props}
+                              />
                             </div>
                           ),
                           thead: ({ node, ...props }) => (
                             <thead className="bg-gray-50" {...props} />
                           ),
                           th: ({ node, ...props }) => (
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" {...props} />
+                            <th
+                              className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                              {...props}
+                            />
                           ),
                           td: ({ node, ...props }) => (
-                            <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100" {...props} />
+                            <td
+                              className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100"
+                              {...props}
+                            />
                           ),
                         }}
                       >
@@ -227,8 +271,8 @@ const Assistant = () => {
           {isLoading && (
             <div className="flex w-full justify-start">
               <div className="flex max-w-[85%] gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shrink-0 text-white shadow-sm">
-                  <i className="ri-openai-fill text-sm"></i>
+                <div className="w-8 h-8 rounded-full bg-[#F9FAFB] flex items-center justify-center shrink-0 text-text-black shadow-sm">
+                  <i className="ri-robot-2-fill"></i>
                 </div>
                 <div className="bg-white border border-gray-100 px-5 py-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5">
                   <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
@@ -244,22 +288,25 @@ const Assistant = () => {
       </div>
 
       {/* Input Area - Fixed at bottom of the flex container */}
-      <div className="bg-white border-t border-gray-100 p-4 md:px-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] z-10">
-        <div className="max-w-3xl mx-auto">
-
+      <div className="bg-white border-t border-gray-100 p-1 md:px-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] z-10 absolute bottom-0 w-full">
+        <div className="max-w-3xl mx-auto bg-transparent px-4 py-4 rounded-4xl">
           {/* Selected File Preview */}
           {file && (
             <div className="mb-3 flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg w-fit text-sm border border-blue-100 animate-fade-in">
               <i className="ri-attachment-line"></i>
-              <span className="truncate max-w-[200px] font-medium">{file.name}</span>
-              <button onClick={clearFile} className="ml-2 text-blue-400 hover:text-blue-700 transition-colors">
+              <span className="truncate max-w-[200px] font-medium">
+                {file.name}
+              </span>
+              <button
+                onClick={clearFile}
+                className="ml-2 text-blue-400 hover:text-blue-700 transition-colors"
+              >
                 <i className="ri-close-circle-fill text-lg"></i>
               </button>
             </div>
           )}
 
           <div className="relative flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-xl p-2 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all shadow-inner">
-
             <input
               type="file"
               ref={fileInputRef}
@@ -283,20 +330,25 @@ const Assistant = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={file ? "Add a message about this file..." : "Message Assistant..."}
+              placeholder={
+                file
+                  ? "Add a message about this file..."
+                  : "Message Assistant..."
+              }
               className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 text-gray-700 placeholder-gray-400 max-h-[120px] overflow-y-auto leading-relaxed focus:outline-none"
               rows={1}
-              style={{ minHeight: '48px' }}
+              style={{ minHeight: "48px" }}
             />
 
             {/* Send Button */}
             <button
               onClick={file ? analyzeFile : sendMessage}
               disabled={(!input.trim() && !file) || isLoading}
-              className={`p-2.5 rounded-lg shrink-0 transition-all duration-200 flex items-center justify-center ${(!input.trim() && !file) || isLoading
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-                }`}
+              className={`p-2.5 rounded-lg shrink-0 transition-all duration-200 flex items-center justify-center ${
+                (!input.trim() && !file) || isLoading
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              }`}
             >
               {isLoading ? (
                 <i className="ri-loader-4-line animate-spin text-xl"></i>
@@ -308,7 +360,8 @@ const Assistant = () => {
 
           <div className="text-center mt-3">
             <p className="text-[11px] text-gray-400">
-              Kenkoo Assistant can make mistakes. Consider checking important information.
+              Kenkoo Assistant can make mistakes. Consider checking important
+              information.
             </p>
           </div>
         </div>
@@ -318,18 +371,6 @@ const Assistant = () => {
 };
 
 export default Assistant;
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState, useRef, useEffect } from "react";
 

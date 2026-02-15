@@ -13,21 +13,22 @@ import Assistant from "./Pages/Assistant";
 const App = () => {
   return (
     <>
-      <Navbar />
+      <div className="flex flex-col h-full">
+        <Navbar />
 
-      <div className="App min-h-screen">
-        <Routes>
-          <Route path="/" element={<Assistant />} />
-          <Route path="/Records" element={<Records />} />
-          <Route path="/Insights" element={<Insights />} />
-          <Route path="/careplan" element={<CarePlan />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
+        <div className="flex-1 overflow-hidden relative bg-gray-50/50">
+          <Routes>
+            <Route path="/" element={<Assistant />} />
+            <Route path="/Records" element={<Records />} />
+            <Route path="/Insights" element={<Insights />} />
+            <Route path="/careplan" element={<CarePlan />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
+        </div>
+
+        {/* <Footer/> */}
       </div>
-
-      {/* <Footer/> */}
-      {/* <FooterForAssistance /> */}
     </>
   );
 };

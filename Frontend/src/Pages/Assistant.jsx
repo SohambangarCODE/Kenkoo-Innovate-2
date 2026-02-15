@@ -219,8 +219,8 @@ const Assistant = () => {
                       : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"
                   }`}
                 >
-                  {msg.type === "file" ? (
-                    <div className="flex items-center gap-2">
+                  {msg.type === "file" && (
+                    <div className="flex items-center gap-2 mb-2">
                       <div className="p-1.5 bg-white/20 rounded-lg">
                         <i className="ri-file-text-line text-lg"></i>
                       </div>
@@ -228,40 +228,39 @@ const Assistant = () => {
                         {msg.fileName}
                       </span>
                     </div>
-                  ) : (
-                    <div className="prose prose-sm max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          table: ({ node, ...props }) => (
-                            <div className="overflow-x-auto my-4 border border-gray-200 rounded-lg">
-                              <table
-                                className="min-w-full divide-y divide-gray-200"
-                                {...props}
-                              />
-                            </div>
-                          ),
-                          thead: ({ node, ...props }) => (
-                            <thead className="bg-gray-50" {...props} />
-                          ),
-                          th: ({ node, ...props }) => (
-                            <th
-                              className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                              {...props}
-                            />
-                          ),
-                          td: ({ node, ...props }) => (
-                            <td
-                              className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100"
-                              {...props}
-                            />
-                          ),
-                        }}
-                      >
-                        {msg.content}
-                      </ReactMarkdown>
-                    </div>
                   )}
+                  <div className="prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        table: ({ node, ...props }) => (
+                          <div className="overflow-x-auto my-4 border border-gray-200 rounded-lg">
+                            <table
+                              className="min-w-full divide-y divide-gray-200"
+                              {...props}
+                            />
+                          </div>
+                        ),
+                        thead: ({ node, ...props }) => (
+                          <thead className="bg-gray-50" {...props} />
+                        ),
+                        th: ({ node, ...props }) => (
+                          <th
+                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                            {...props}
+                          />
+                        ),
+                        td: ({ node, ...props }) => (
+                          <td
+                            className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100"
+                            {...props}
+                          />
+                        ),
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               </div>
             </div>

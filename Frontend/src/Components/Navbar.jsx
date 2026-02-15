@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, logout } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,6 +90,8 @@ function Navbar() {
     }
   };
 
+  const isActivePath = (path) => location.pathname === path;
+
   return (
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 px-3 ${
@@ -99,13 +104,13 @@ function Navbar() {
         <div className="flex items-center justify-between py-4">
           {/* Logo and Brand */}
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center">
+            <Link to="/" className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center">
               <img
                 src="/logo.png-removebg-preview.png"
                 alt="Kenkoo logo"
                 className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
               />
-            </div>
+            </Link>
             <div className="font-bold text-2xl sm:text-3xl md:text-4xl text-[#05395e]">
               Kenkoo
             </div>
@@ -118,7 +123,6 @@ function Navbar() {
               className="relative flex flex-col justify-between w-7 h-5 sm:w-8 sm:h-6 focus:outline-none group"
               aria-label="Toggle menu"
             >
-              {/* Top bar */}
               <motion.span
                 className="block h-1 w-full bg-gray-800 rounded-full"
                 animate={
@@ -126,15 +130,11 @@ function Navbar() {
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               />
-
-              {/* Middle bar */}
               <motion.span
                 className="block h-1 w-full bg-gray-800 rounded-full"
                 animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
                 transition={{ duration: 0.2 }}
               />
-
-              {/* Bottom bar */}
               <motion.span
                 className="block h-1 w-full bg-gray-800 rounded-full"
                 animate={
@@ -142,9 +142,6 @@ function Navbar() {
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               />
-
-              {/* Optional hover effect */}
-              <span className="absolute inset-0 rounded-md scale-125 opacity-0 group-hover:opacity-10 bg-gray-500 transition" />
             </button>
           </div>
 
@@ -191,16 +188,6 @@ function Navbar() {
               Care Plan
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full  transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
-            {/* <NavLink
-              to="/about"
-              className={linkClass}
-              style={navItemStyle}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              About Us
-              <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
-            </NavLink> */}
             <NavLink
               to="/contact"
               className={linkClass}
@@ -211,28 +198,35 @@ function Navbar() {
               Contact Us
               <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
             </NavLink>
-            <NavLink
-              to="/profile"
-              className={linkClass}
-              style={navItemStyle}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-            >
-              Your Profile
-              <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
-            </NavLink>
-            {/* <Link
-              to="/signin"
-              className="px-3 py-2 rounded-md text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 transition-all duration-300 hover:scale-105 shadow-md"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/login"
-              className="px-3 py-2 rounded-md text-sm font-medium text-white bg-cyan-500 hover:bg-cyan-600 transition-all duration-300 hover:scale-105 shadow-md"
-            >
-              Log In
-            </Link> */}
+            
+            {user ? (
+              <>
+                 <NavLink
+                    to="/profile"
+                    className={linkClass}
+                    style={navItemStyle}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    Profile
+                    <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
+                  </NavLink>
+                  <button
+                    onClick={logout}
+                    className="ml-2 px-4 py-2 rounded-xl bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition-colors border border-red-100"
+                  >
+                    Logout
+                  </button>
+              </>
+            ) : (
+               <Link
+                to="/login"
+                className="ml-2 px-6 py-2.5 rounded-2xl bg-[#05395e] text-white font-bold hover:bg-[#032b48] transition-all shadow-md active:scale-95"
+              >
+                Login
+              </Link>
+            )}
+           
           </div>
         </div>
 
@@ -270,13 +264,6 @@ function Navbar() {
             >
               Care Plan
             </NavLink>
-            {/* <NavLink
-              to="/about"
-              className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
-              onClick={handleLinkClick}
-            >
-              About Us
-            </NavLink> */}
             <NavLink
               to="/contact"
               className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
@@ -284,13 +271,38 @@ function Navbar() {
             >
               Contact Us
             </NavLink>
-            <NavLink
-              to="/profile"
-              className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
-              onClick={handleLinkClick}
-            >
-              Your Profile
-            </NavLink>
+            
+            <div className="border-t border-gray-100 my-2 pt-2"></div>
+            
+            {user ? (
+              <>
+                <NavLink
+                  to="/profile"
+                  className="px-4 py-3 text-gray-700 hover:bg-gray-100 hover:text-[#05395e] font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
+                  onClick={handleLinkClick}
+                >
+                  Your Profile ({user.name})
+                </NavLink>
+                 <button
+                  onClick={() => {
+                    logout();
+                    handleLinkClick();
+                  }}
+                  className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+                <NavLink
+                  to="/login"
+                  className="px-4 py-3 text-[#1447E6] hover:bg-blue-50 font-bold transition-all duration-300 hover:pl-6 hover:shadow-inner"
+                  onClick={handleLinkClick}
+                >
+                  Login / Sign Up
+                </NavLink>
+            )}
+            
           </div>
         </div>
       </div>

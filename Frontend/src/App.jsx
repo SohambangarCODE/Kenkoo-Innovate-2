@@ -9,10 +9,13 @@ import CarePlan from "./Pages/CarePlan";
 import ContactPage from "./Pages/ContactPage";
 import Profile from "./Pages/Profile";
 import Assistant from "./Pages/Assistant";
+import Login from "./Pages/Login";
+import Signup from "./Pages/Signup";
+import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
   return (
-    <>
+    <AuthProvider>
       <div className="flex flex-col h-full">
         <Navbar />
 
@@ -24,12 +27,14 @@ const App = () => {
             <Route path="/careplan" element={<CarePlan />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
           </Routes>
         </div>
 
         {/* <Footer/> */}
       </div>
-    </>
+    </AuthProvider>
   );
 };
 

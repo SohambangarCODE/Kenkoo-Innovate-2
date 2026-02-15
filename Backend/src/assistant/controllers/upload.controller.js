@@ -1,6 +1,6 @@
 const fs = require("fs");
-const extractText = require("./services/parser.service");
-const analyzeMedicalReport = require("./services/ai.service");
+const extractText = require("../services/parser.service");
+const { analyzeMedicalReport } = require("../services/ai.service");
 
 const uploadFile = async (req, res) => {
   try {
@@ -15,7 +15,7 @@ const uploadFile = async (req, res) => {
 
     const text = await extractText(filePath);
 
-     // send both text + prompt to AI
+    // send both text + prompt to AI
     const analysis = await analyzeMedicalReport(text, req.body.question);
 
 
@@ -23,12 +23,13 @@ const uploadFile = async (req, res) => {
 
     res.json({
       success: true,
+      result: analysis.answer_to_user || analysis.summary || "Analysis complete.",
       analysis,
     });
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Processing failed" });
+    console.error("UPLOAD ERROR:", err);
+    res.status(500).json({ error: "Processing failed", details: err.message });
   }
 };
 

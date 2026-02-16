@@ -12,6 +12,10 @@ app.use("/uploads", express.static("uploads"));
 
 const path = require("path");
 
+app.get("/", (req, res) => {
+  res.send("Kenkoo Backend is Live 🚀");
+});
+
 // Serve static files from the Frontend app
 app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
 

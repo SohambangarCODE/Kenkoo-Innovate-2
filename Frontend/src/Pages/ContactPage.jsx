@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
-import Swal from 'sweetalert2'
+import React, { useState } from "react";
+import Swal from 'sweetalert2';
 import FooterForAssistance from "../Components/FooterForAssistance";
+import { motion } from "framer-motion";
 
 function ContactPage() {
   const [formData, setFormData] = useState({
@@ -11,38 +12,46 @@ function ContactPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const formRef = useRef(null);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-  };
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    setIsSubmitting(true);
+    
+    try {
+        const formDataObj = new FormData(event.target);
+        const object = Object.fromEntries(formDataObj);
+        
+        // Remove access_key if it exists
+        delete object.access_key;
 
-    formData.append("access_key", "365c631f-e663-4da7-9124-015f84960529");
+        const res = await fetch("http://localhost:3000/api/contact/submit", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(object)
+        }).then((res) => res.json());
 
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
-
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-      },
-      body: json
-    }).then((res) => res.json());
-
-    if (res.success) {
-      Swal.fire({
-  title: "Success!",
-  text: "Message Sent Successfully!",
-  icon: "success"
-});
+        if (res.success) {
+          Swal.fire({
+            title: "Message Sent!",
+            text: "We've received your message and will get back to you shortly.",
+            icon: "success",
+            confirmButtonColor: "#3C53E8"
+          });
+          setFormData({ name: "", email: "", subject: "", message: "" });
+        } else {
+            throw new Error(res.message || "Submission failed");
+        }
+    } catch (error) {
+        Swal.fire({
+            title: "Error",
+            text: error.message || "Something went wrong. Please try again later.",
+            icon: "error",
+            confirmButtonColor: "#d33"
+        });
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -53,244 +62,192 @@ function ContactPage() {
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        duration: 0.6, 
+        when: "beforeChildren",
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
   return (
-    <div className="min-h-screen bg-white text-black">
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#3C53E8] mb-8 text-center">
-            Contact Us
-          </h1>
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            <div className="bg-[#05395e] rounded-lg shadow-xl p-6 md:p-8 border border-[#05395e]/80 transform transition-all duration-300">
-              <h2 className="text-2xl font-semibold text-[#38b6ff] mb-6">
-                Get in Touch
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-center">
-                  <div className="bg-[#38b6ff] p-3 rounded-full mr-4">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Email</h3>
-                    <a
-                      href="mailto:kenkoohealth@gmail.com?subject=Contact from Kenkoo Website"
-                      className="text-[#38b6ff] hover:text-[#38b6ff]/80 transition-colors"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      kenkoohealth@gmail.com
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="bg-[#38b6ff] p-3 rounded-full mr-4">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Phone</h3>
-                    <a
-                      href="https://wa.me/919356382295"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#38b6ff] hover:text-[#38b6ff]/80 transition-colors"
-                    >
-                      +91 9356382295
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="bg-[#38b6ff] p-3 rounded-full mr-4">
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-white">Address</h3>
-                    <p className="text-gray-300">Pune, Maharashtra, India</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-[#05395e] rounded-lg shadow-xl p-8 border border-[#05395e]/80">
-              <h2 className="text-2xl font-semibold text-[#38b6ff] mb-6">
-                Send us a Message
-              </h2>
-              <form ref={formRef} onSubmit={onSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#38b6ff] focus:border-transparent"
-                    placeholder="Your name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#38b6ff] focus:border-transparent"
-                    placeholder="your.email@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#38b6ff] focus:border-transparent"
-                    placeholder="What is this regarding?"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Message
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={4}
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#38b6ff] focus:border-transparent"
-                    placeholder="How can we help you?"
-                  />
-                </div>
+    <div className="h-full bg-gray-50 text-gray-800 font-sans flex flex-col overflow-y-auto">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-[#022c4a] to-[#2a41c2] text-white py-20 md:py-32 relative overflow-hidden shrink-0">
+        {/* Abstract shapes */}
+        <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full filter blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#38b6ff] opacity-10 rounded-full filter blur-3xl translate-x-1/3 translate-y-1/3"></div>
 
-                {submitSuccess && (
-                  <div className="bg-green-800 text-green-100 p-3 rounded-md mb-4 flex items-center">
-                    <svg
-                      className="w-5 h-5 mr-2"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    Message sent successfully to kenkoohealth@gmail.com!
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className={`w-full py-3 px-4 rounded-md transition-all duration-300 flex items-center justify-center ${
-                    isSubmitting
-                      ? "bg-gray-600 cursor-not-allowed"
-                      : "bg-[#3C53E8] hover:bg-[#3C53E8]/90 text-white"
-                  }`}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <svg
-                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Sending...
-                    </>
-                  ) : (
-                    <>
-                      Send Message
-                      <svg
-                        className="w-5 h-5 ml-2"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M14 5l7 7m0 0l-7 7m7-7H3"
-                        />
-                      </svg>
-                    </>
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+        <motion.div 
+            className="container mx-auto px-4 text-center relative z-10"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+        >
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight drop-shadow-lg">
+                Contact Us
+            </h1>
+            <p className="text-lg md:text-2xl text-blue-100 max-w-3xl mx-auto font-light leading-relaxed">
+                Have questions or need assistance? We're here to help you on your journey to better health.
+            </p>
+        </motion.div>
       </div>
-    </div>
+
+      <motion.div 
+        className="container mx-auto px-4 py-12 md:py-16 -mt-20 flex-grow relative z-20 pb-20"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+            
+            {/* Contact Info Section */}
+            <motion.div 
+                className="md:w-5/12 bg-[#05395e] text-white p-10 lg:p-12 flex flex-col justify-between relative overflow-hidden"
+                variants={itemVariants}
+            >
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-[#38b6ff] rounded-full opacity-20 blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-[#3C53E8] rounded-full opacity-20 blur-3xl"></div>
+
+                <div className="relative z-10">
+                    <h2 className="text-3xl font-bold mb-8">Get in Touch</h2>
+                    <p className="text-slate-300 mb-10 leading-relaxed text-lg">
+                        Fill up the form and our team will get back to you within 24 hours. We'd love to hear from you!
+                    </p>
+
+                    <div className="space-y-8">
+                        <motion.div className="flex items-start group" whileHover={{ x: 5 }}>
+                            <div className="bg-[#38b6ff]/20 p-4 rounded-xl mr-5 shrink-0 transition-colors group-hover:bg-[#38b6ff]/30">
+                                <svg className="w-6 h-6 text-[#38b6ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg mb-1">Email</h3>
+                                <a href="mailto:kenkoohealth@gmail.com" className="text-slate-300 hover:text-white transition-colors text-base">kenkoohealth@gmail.com</a>
+                            </div>
+                        </motion.div>
+
+                         <motion.div className="flex items-start group" whileHover={{ x: 5 }}>
+                            <div className="bg-[#38b6ff]/20 p-4 rounded-xl mr-5 shrink-0 transition-colors group-hover:bg-[#38b6ff]/30">
+                                <svg className="w-6 h-6 text-[#38b6ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg mb-1">Phone</h3>
+                                <a href="https://wa.me/919356382295" target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-white transition-colors text-base">+91 9356382295</a>
+                            </div>
+                        </motion.div>
+
+                        <motion.div className="flex items-start group" whileHover={{ x: 5 }}>
+                            <div className="bg-[#38b6ff]/20 p-4 rounded-xl mr-5 shrink-0 transition-colors group-hover:bg-[#38b6ff]/30">
+                                <svg className="w-6 h-6 text-[#38b6ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-lg mb-1">Location</h3>
+                                <p className="text-slate-300 text-base">Pune, Maharashtra, India</p>
+                            </div>
+                        </motion.div>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Form Section */}
+            <motion.div 
+                className="md:w-7/12 p-10 lg:p-12 bg-white"
+                variants={itemVariants}
+            >
+                <h2 className="text-3xl font-bold text-gray-800 mb-8">Send us a Message</h2>
+                <form onSubmit={onSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="group">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-[#3C53E8] transition-colors">Your Name</label>
+                            <input
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                                placeholder="John Doe"
+                            />
+                        </div>
+                        <div className="group">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-[#3C53E8] transition-colors">Your Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                required
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                                placeholder="john@example.com"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="group">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-[#3C53E8] transition-colors">Subject</label>
+                        <input
+                            type="text"
+                            name="subject"
+                            value={formData.subject}
+                            onChange={handleChange}
+                            required
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+                            placeholder="How can we help?"
+                        />
+                    </div>
+
+                    <div className="group">
+                         <label className="block text-sm font-semibold text-gray-700 mb-2 group-focus-within:text-[#3C53E8] transition-colors">Message</label>
+                         <textarea
+                            name="message"
+                            value={formData.message}
+                            onChange={handleChange}
+                            required
+                            rows={5}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all resize-none bg-gray-50 focus:bg-white"
+                            placeholder="Write your message here..."
+                        />
+                    </div>
+
+                    <motion.button
+                        type="submit"
+                        disabled={isSubmitting}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className={`w-full py-4 rounded-xl font-bold text-white shadow-lg text-lg ${
+                            isSubmitting ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-[#3C53E8] to-[#38b6ff] hover:shadow-xl hover:opacity-95"
+                        }`}
+                    >
+                        {isSubmitting ? (
+                            <span className="flex items-center justify-center">
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Sending Message...
+                            </span>
+                        ) : (
+                            "Send Message"
+                        )}
+                    </motion.button>
+                </form>
+            </motion.div>
+        </div>
+      </motion.div>
     
+      {/* <FooterForAssistance /> */}
+      
+    </div>
   );
 }
 

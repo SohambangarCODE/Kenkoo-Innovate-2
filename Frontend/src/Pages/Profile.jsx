@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
 
 const Profile = () => {
   const { user, updateUser, loading: authLoading } = useAuth();
@@ -8,9 +9,9 @@ const Profile = () => {
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
 
-  // Theme Colors
-  const PRIMARY_COLOR = "#1447E6";
-  const SECONDARY_COLOR = "#3C53E8";
+  // Theme Colors - Updated to match ContactPage
+  const PRIMARY_COLOR = "#022c4a";
+  const SECONDARY_COLOR = "#2a41c2";
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -81,29 +82,59 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.15,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
   if (authLoading || !user) {
     return (
       <div className="flex h-[80vh] items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1447E6]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#2a41c2]"></div>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 py-6 px-4 md:py-8 md:px-8">
+    <motion.div 
+      className="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white py-6 px-4 md:py-8 md:px-8 custom-scrollbar"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-5xl mx-auto">
         
         {/* Header Section */}
-        <div 
-          className="relative rounded-3xl overflow-hidden shadow-xl mb-6 md:mb-8"
+        <motion.div 
+          className="relative rounded-3xl overflow-hidden shadow-2xl mb-6 md:mb-8"
           style={{ background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, ${SECONDARY_COLOR} 100%)` }}
+          variants={itemVariants}
         >
-          <div className="absolute inset-0 bg-white/10 opacity-30 pattern-grid-lg"></div>
+          {/* Decorative blobs */}
+          <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full filter blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 opacity-10 rounded-full filter blur-3xl translate-x-1/3 translate-y-1/3"></div>
           <div className="relative px-6 py-8 md:px-8 md:py-14 text-white flex flex-col md:flex-row items-center md:items-end gap-6">
             
             {/* Avatar */}
-            <div className="relative group">
-              <div className="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-lg overflow-hidden bg-white">
+            <motion.div 
+              className="relative group"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-white">
                 <img 
                   src={user?.profileImage || "https://ui-avatars.com/api/?name=User&background=random"} 
                   alt="Profile" 
@@ -114,9 +145,11 @@ const Profile = () => {
                  <>
                    <label 
                      htmlFor="profile-image-upload"
-                     className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10"
+                     className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10"
                    >
-                      <span className="text-xs font-medium text-white">Change Photo</span>
+                      <span className="text-sm font-semibold text-white flex items-center gap-2">
+                        <i className="ri-camera-line"></i> Change
+                      </span>
                    </label>
                    <input 
                       type="file" 
@@ -127,7 +160,7 @@ const Profile = () => {
                    />
                  </>
               )}
-            </div>
+            </motion.div>
 
             {/* Basic Info */}
             <div className="flex-1 text-center md:text-left mb-2">
@@ -140,38 +173,47 @@ const Profile = () => {
             {/* Edit Button */}
             <div className="mb-4 md:mb-2">
               {!isEditing ? (
-                <button 
+                <motion.button 
                   onClick={() => setIsEditing(true)}
-                  className="px-6 py-2.5 bg-white text-[#1447E6] font-semibold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-6 py-2.5 bg-white text-[#2a41c2] font-semibold rounded-xl shadow-lg hover:shadow-2xl transition-shadow flex items-center gap-2"
                 >
                   <i className="ri-edit-line"></i> Edit Profile
-                </button>
+                </motion.button>
               ) : (
                 <div className="flex gap-3">
-                  <button 
+                  <motion.button 
                     onClick={handleCancel}
-                    className="px-5 py-2.5 bg-white/20 hover:bg-white/30 text-white font-medium rounded-xl backdrop-blur-sm transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-5 py-2.5 bg-white/20 hover:bg-white/30 text-white font-medium rounded-xl backdrop-blur-sm transition-all"
                   >
                     Cancel
-                  </button>
-                  <button 
+                  </motion.button>
+                  <motion.button 
                     onClick={handleSave}
-                    className="px-6 py-2.5 bg-white text-[#1447E6] font-bold rounded-xl shadow-lg hover:shadow-xl hover:bg-gray-50 transition-all transform hover:-translate-y-0.5 active:scale-95"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-6 py-2.5 bg-white text-[#2a41c2] font-bold rounded-xl shadow-lg hover:shadow-2xl transition-shadow"
                   >
                     Save Changes
-                  </button>
+                  </motion.button>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Left Column: Personal Stats / Quick Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <motion.div className="lg:col-span-1 space-y-6" variants={itemVariants}>
+            <motion.div 
+              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow"
+              whileHover={{ y: -4 }}
+            >
               <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <i className="ri-heart-pulse-line text-[#1447E6]"></i> Health Stats
               </h3>
@@ -249,10 +291,13 @@ const Profile = () => {
                    )}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* About Card */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+            <motion.div 
+              className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow"
+              whileHover={{ y: -4 }}
+            >
               <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
                  <i className="ri-user-smile-line text-[#1447E6]"></i> Bio
               </h3>
@@ -270,12 +315,15 @@ const Profile = () => {
                   {user?.bio || "No bio added yet."}
                 </p>
               )}
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Right Column: Contact & Detailed Info */}
-          <div className="lg:col-span-2 space-y-6">
-             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
+          <motion.div className="lg:col-span-2 space-y-6" variants={itemVariants}>
+             <motion.div 
+               className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 md:p-8 hover:shadow-xl transition-shadow"
+               whileHover={{ y: -4 }}
+             >
                 <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2 pb-4 border-b border-gray-100">
                   <i className="ri-file-user-line text-[#1447E6]"></i> Personal Information
                 </h3>
@@ -364,10 +412,13 @@ const Profile = () => {
                    )}
 
                 </div>
-             </div>
+             </motion.div>
 
              {/* Account Verification Mockup */}
-             <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-6 md:p-8 text-white relative overflow-hidden">
+             <motion.div 
+               className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 text-white relative overflow-hidden hover:shadow-blue-500/20 transition-shadow"
+               whileHover={{ y: -4, scale: 1.01 }}
+             >
                 <div className="relative z-10 flex items-center justify-between">
                   <div>
                     <h3 className="text-lg font-bold mb-1">Premium Member</h3>
@@ -385,15 +436,15 @@ const Profile = () => {
                 </div>
                 
                 {/* Decorative circles */}
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#1447E6] rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute top-0 right-20 w-20 h-20 bg-[#3C53E8] rounded-full opacity-20 blur-2xl"></div>
-             </div>
+                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#2a41c2] rounded-full opacity-20 blur-3xl"></div>
+                <div className="absolute top-0 right-20 w-20 h-20 bg-blue-500 rounded-full opacity-20 blur-2xl"></div>
+             </motion.div>
 
-          </div>
+          </motion.div>
 
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

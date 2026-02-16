@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import FooterForAssistance from "../Components/FooterForAssistance";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_CHAT_URL = "/api/assistant/chat";
 const API_UPLOAD_URL = "/api/upload";
@@ -145,226 +145,289 @@ const Assistant = () => {
     }
   };
 
-  const inputAreaRef = useRef(null);
+  // Animation variants
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.5, staggerChildren: 0.1 } },
+  };
 
-  useEffect(() => {
-    if (!inputAreaRef.current) return;
-
-    const height = inputAreaRef.current.offsetHeight;
-    // You can set a css variable or just use inline style
-    document.documentElement.style.setProperty(
-      "--input-height",
-      `${height + 20}px`,
-    );
-  }, [file, input]); // re-measure when file preview appears / text grows
+  const messageVariants = {
+    initial: { opacity: 0, y: 10, scale: 0.95 },
+    animate: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.3 } },
+  };
 
   return (
-    // Main Container: Fills available height between Navbar (~64px) and Footer (~auto)
-    // Using dvh (dynamic viewport height) for better mobile browser support
-    <div className="flex flex-col h-[calc(100dvh-130px)] bg-gray-50 relative">
-      {/* Chat Scroll Area */}
-      <div
-        className="flex-1 overflow-y-auto p-3 md:p-6 scroll-smooth"
-        style={{ paddingBottom: "var(--input-height, 100px)" }}
-      >
-        <div className="max-w-3xl mx-auto space-y-6">
+    // Main Container: Flex column layout that fills the viewport height minus header
+    <motion.div 
+      className="flex flex-col h-[calc(100vh-80px)] bg-gradient-to-b from-gray-50 to-white relative"
+      initial="initial"
+      animate="animate"
+      variants={pageVariants}
+    >
+      
+      {/* Chat Scroll Area - This grows to fill available space */}
+      <div className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth custom-scrollbar">
+        <div className="max-w-4xl mx-auto space-y-6 pb-4">
+          
           {/* Empty State */}
-          {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-[30vh] text-center text-gray-500">
-              <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center mb-4">
-                <span className="text-3xl">
-                  <img src="/logo.png-removebg-preview.png" alt="" />
-                </span>
-              </div>
-              <h2 className="text-xl font-semibold text-gray-800">
-                Kenkoo Assistant
-              </h2>
-              <p className="mt-2 text-sm text-gray-500 max-w-xs">
-                Ask about your health records, care plan, or upload documents
-                for analysis.
-              </p>
-            </div>
-          )}
+          <AnimatePresence>
+            {messages.length === 0 && (
+              <motion.div 
+                className="flex flex-col items-center justify-center h-[60vh] text-center text-gray-500"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+              >
+                <div className="w-20 h-20 bg-white rounded-3xl shadow-lg border border-gray-100 flex items-center justify-center mb-6 overflow-hidden relative group">
+                  <div className="absolute inset-0 bg-blue-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                  <motion.img 
+                    src="/logo.png-removebg-preview.png" 
+                    alt="Logo" 
+                    className="w-12 h-12 object-contain"
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                  />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800 tracking-tight mb-3">
+                  Kenkoo Assistant
+                </h2>
+                <p className="text-base text-gray-500 max-w-md leading-relaxed">
+                  Your personal health companion. Ask about your health records, care plan, or upload documents for instant analysis.
+                </p>
+                
+                {/* Simulated capabilities tags */}
+                <div className="flex flex-wrap justify-center gap-3 mt-8">
+                  {["Analyze Reports", "Diet Plan", "Symptom Check", "Visual Analysis"].map((tag, i) => (
+                    <span key={i} className="px-3 py-1 bg-gray-100/50 border border-gray-200 rounded-full text-xs font-medium text-gray-600">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Messages List */}
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-            >
-              <div
-                className={`flex max-w-[85%] md:max-w-[75%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
+          <AnimatePresence mode="popLayout">
+            {messages.map((msg, idx) => (
+              <motion.div
+                key={idx}
+                layout
+                variants={messageVariants}
+                initial="initial"
+                animate="animate"
+                className={`flex w-full ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {/* Avatar */}
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm ${
-                    msg.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : " text-black"
-                  }`}
+                  className={`flex max-w-[85%] md:max-w-[75%] gap-4 ${msg.role === "user" ? "flex-row-reverse" : "flex-row"}`}
                 >
-                  {msg.role === "user" ? (
-                    <i className="ri-robot-2-fill"></i>
-                  ) : (
-                    <i className="ri-robot-2-fill"></i>
-                  )}
-                </div>
+                  {/* Avatar */}
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 shadow-md transform transition-transform hover:scale-105 ${
+                      msg.role === "user"
+                        ? "bg-gradient-to-tr from-blue-600 to-blue-400 text-white"
+                        : "bg-white border border-gray-100 text-blue-600"
+                    }`}
+                  >
+                    {msg.role === "user" ? (
+                      <i className="ri-user-smile-line text-lg"></i>
+                    ) : (
+                      <i className="ri-robot-2-line text-lg"></i>
+                    )}
+                  </div>
 
-                {/* Message Bubble */}
-                <div
-                  className={`px-5 py-3.5 rounded-2xl text-[15px] leading-relaxed shadow-sm ${
-                    msg.role === "user"
-                      ? "bg-blue-600 text-white rounded-tr-none"
-                      : "bg-white border border-gray-100 text-gray-800 rounded-tl-none"
-                  }`}
-                >
-                  {msg.type === "file" && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="p-1.5 bg-white/20 rounded-lg">
-                        <i className="ri-file-text-line text-lg"></i>
+                  {/* Message Bubble */}
+                  <div
+                    className={`px-6 py-4 rounded-2xl text-[15px] leading-relaxed shadow-sm transform transition-all hover:shadow-md ${
+                      msg.role === "user"
+                        ? "bg-gradient-to-br from-blue-600 to-blue-500 text-white rounded-tr-sm"
+                        : "bg-white border border-gray-100 text-gray-800 rounded-tl-sm"
+                    }`}
+                  >
+                    {msg.type === "file" && (
+                      <div className="flex items-center gap-3 mb-3 pb-3 border-b border-white/20">
+                        <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                          <i className="ri-file-text-line text-xl"></i>
+                        </div>
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="font-semibold text-sm truncate w-full">
+                            {msg.fileName}
+                          </span>
+                          <span className="text-xs opacity-80">Document Attached</span>
+                        </div>
                       </div>
-                      <span className="font-medium truncate">
-                        {msg.fileName}
-                      </span>
-                    </div>
-                  )}
-                  <div className="prose prose-sm max-w-none">
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        table: ({ node, ...props }) => (
-                          <div className="overflow-x-auto my-4 border border-gray-200 rounded-lg">
-                            <table
-                              className="min-w-full divide-y divide-gray-200"
+                    )}
+                    <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : ""}`}>
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          table: ({ node, ...props }) => (
+                            <div className="overflow-x-auto my-4 border border-gray-200 rounded-lg bg-gray-50/50">
+                              <table
+                                className="min-w-full divide-y divide-gray-200"
+                                {...props}
+                              />
+                            </div>
+                          ),
+                          thead: ({ node, ...props }) => (
+                            <thead className="bg-gray-100" {...props} />
+                          ),
+                          th: ({ node, ...props }) => (
+                            <th
+                              className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider"
                               {...props}
                             />
-                          </div>
-                        ),
-                        thead: ({ node, ...props }) => (
-                          <thead className="bg-gray-50" {...props} />
-                        ),
-                        th: ({ node, ...props }) => (
-                          <th
-                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                            {...props}
-                          />
-                        ),
-                        td: ({ node, ...props }) => (
-                          <td
-                            className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100"
-                            {...props}
-                          />
-                        ),
-                      }}
-                    >
-                      {msg.content}
-                    </ReactMarkdown>
+                          ),
+                          td: ({ node, ...props }) => (
+                            <td
+                              className="px-4 py-3 whitespace-nowrap text-sm text-gray-700 border-t border-gray-100"
+                              {...props}
+                            />
+                          ),
+                          code: ({node, inline, className, children, ...props}) => {
+                              return !inline ? (
+                                <div className="bg-gray-900 rounded-lg p-3 my-2 overflow-x-auto text-gray-100 text-xs font-mono">
+                                  {children}
+                                </div>
+                              ) : (
+                                <code className="bg-gray-100 px-1 py-0.5 rounded text-red-500 font-mono text-xs" {...props}>
+                                  {children}
+                                </code>
+                              )
+                          }
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div className="flex w-full justify-start">
-              <div className="flex max-w-[85%] gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#F9FAFB] flex items-center justify-center shrink-0 text-text-black shadow-sm">
-                  <i className="ri-robot-2-fill"></i>
-                </div>
-                <div className="bg-white border border-gray-100 px-5 py-4 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1.5">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                </div>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex w-full justify-start pl-[3.25rem]"
+            >
+              <div className="bg-white border border-gray-100 px-5 py-4 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2">
+                <span className="text-xs font-medium text-gray-400 mr-1">Thinking</span>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></div>
               </div>
-            </div>
+            </motion.div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
       </div>
 
-      {/* Input Area - Fixed at bottom of the flex container */}
-      <div className="bg-white border-t border-gray-100 p-2 md:px-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)] z-10 absolute bottom-0 left-0 w-full">
-        <div className="max-w-3xl mx-auto bg-transparent px-2 py-3 md:px-4 md:py-4 rounded-4xl">
-          {/* Selected File Preview */}
-          {file && (
-            <div className="mb-2 flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-2 rounded-lg w-fit text-sm border border-blue-100 animate-fade-in">
-              <i className="ri-attachment-line"></i>
-              <span className="truncate max-w-[120px] md:max-w-[200px] font-medium text-xs md:text-sm">
-                {file.name}
-              </span>
-              <button
-                onClick={clearFile}
-                className="ml-2 text-blue-400 hover:text-blue-700 transition-colors"
-              >
-                <i className="ri-close-circle-fill text-lg"></i>
-              </button>
-            </div>
-          )}
-
-          <div className="relative flex items-end gap-2 bg-gray-50 border border-gray-200 rounded-xl p-2 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all shadow-inner">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileSelect}
-              className="hidden"
-              accept=".pdf,.jpg,.jpeg,.png,.txt,.docx"
-            />
-
-            {/* Attachment Button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="p-2.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors shrink-0"
-              title="Attach file"
-            >
-              <i className="ri-add-circle-line text-2xl"></i>
-            </button>
-
-            {/* Text Input */}
-            <textarea
-              ref={textareaRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={
-                file
-                  ? "Add a message about this file..."
-                  : "Message Assistant..."
-              }
-              className="w-full bg-transparent border-none focus:ring-0 resize-none py-3 text-gray-700 placeholder-gray-400 max-h-[120px] overflow-y-auto leading-relaxed focus:outline-none"
-              rows={1}
-              style={{ minHeight: "48px" }}
-            />
-
-            {/* Send Button */}
-            <button
-              onClick={file ? analyzeFile : sendMessage}
-              disabled={(!input.trim() && !file) || isLoading}
-              className={`p-2.5 rounded-lg shrink-0 transition-all duration-200 flex items-center justify-center ${
-                (!input.trim() && !file) || isLoading
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-              }`}
-            >
-              {isLoading ? (
-                <i className="ri-loader-4-line animate-spin text-xl"></i>
-              ) : (
-                <i className="ri-arrow-up-line text-xl font-bold"></i>
+      {/* Input Area - Static layout at bottom */}
+      <div className="bg-white/80 backdrop-blur-md border-t border-gray-100 p-4 md:px-6 relative z-10 shrink-0">
+        <div className="max-w-4xl mx-auto">
+          
+          <div className="relative group bg-gray-50 border border-gray-200 rounded-2xl p-2 transition-all duration-300 focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 focus-within:bg-white shadow-sm hover:shadow-md">
+            
+            {/* File Preview inside input box */}
+            <AnimatePresence>
+              {file && (
+                <motion.div 
+                  initial={{ height: 0, opacity: 0, marginBottom: 0 }}
+                  animate={{ height: "auto", opacity: 1, marginBottom: 8 }}
+                  exit={{ height: 0, opacity: 0, marginBottom: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="flex items-center gap-3 bg-blue-50 text-blue-700 px-3 py-2 rounded-xl border border-blue-100 w-fit mx-1 mt-1">
+                    <div className="p-1.5 bg-white rounded-lg shadow-sm">
+                      <i className="ri-attachment-line"></i>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="truncate max-w-[150px] md:max-w-[250px] font-semibold text-xs md:text-sm text-gray-800">
+                        {file.name}
+                      </span>
+                      <span className="text-[10px] text-blue-500 font-medium uppercase">Ready to upload</span>
+                    </div>
+                    <button
+                      onClick={clearFile}
+                      className="ml-2 text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded-full"
+                    >
+                      <i className="ri-close-line text-lg"></i>
+                    </button>
+                  </div>
+                </motion.div>
               )}
-            </button>
-          </div>
+            </AnimatePresence>
 
-          <div className="text-center mt-3">
-            <p className="text-[11px] text-gray-400">
-              Kenkoo Assistant can make mistakes. Consider checking important
-              information.
+            <div className="flex items-end gap-2">
+               <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileSelect}
+                className="hidden"
+                accept=".pdf,.jpg,.jpeg,.png,.txt,.docx"
+              />
+
+              {/* Attachment Button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors shrink-0"
+                title="Attach file"
+              >
+                <i className="ri-add-circle-line text-2xl"></i>
+              </motion.button>
+
+              {/* Text Input */}
+              <textarea
+                ref={textareaRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={
+                  file
+                    ? "Add a message about this file..."
+                    : "Message Assistant..."
+                }
+                className="w-full bg-transparent border-none focus:ring-0 resize-none py-3.5 text-gray-700 placeholder-gray-400 max-h-[150px] overflow-y-auto leading-relaxed focus:outline-none text-[15px]"
+                rows={1}
+                style={{ minHeight: "52px" }}
+              />
+
+              {/* Send Button */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={file ? analyzeFile : sendMessage}
+                disabled={(!input.trim() && !file) || isLoading}
+                className={`p-3 rounded-xl shrink-0 transition-all duration-300 flex items-center justify-center shadow-sm ${
+                  (!input.trim() && !file) || isLoading
+                    ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                    : "bg-gradient-to-tr from-blue-600 to-blue-500 text-white hover:shadow-lg hover:shadow-blue-500/30"
+                }`}
+              >
+                {isLoading ? (
+                  <i className="ri-loader-4-line animate-spin text-xl"></i>
+                ) : (
+                  <i className="ri-arrow-up-line text-xl font-bold"></i>
+                )}
+              </motion.button>
+            </div>
+          </div>
+          
+          <div className="text-center mt-3 flex justify-center items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            <p className="text-[11px] text-gray-400 font-medium tracking-wide">
+              Kenkoo AI can make mistakes. Please verify important information.
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

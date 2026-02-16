@@ -19,6 +19,7 @@ app.use("/api", uploadRoutes);
 app.use("/api/assistant", chatRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", require("./routes/auth.route"));
+app.use("/api/contact", require("./routes/contact.route"));
 
 // Handle undefined API routes explicitly to avoid returning HTML
 app.use("/api/*splat", (req, res) => {

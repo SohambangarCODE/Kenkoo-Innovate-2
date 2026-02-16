@@ -3,8 +3,15 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_CHAT_URL = "/api/assistant/chat";
-const API_UPLOAD_URL = "/api/upload";
+// const API_CHAT_URL = "/api/assistant/chat";
+// const API_UPLOAD_URL = "/api/upload";
+
+const API_CHAT_URL =
+"https://kenkoo-backend.onrender.com/api/assistant/chat";
+
+const API_UPLOAD_URL =
+"https://kenkoo-backend.onrender.com/api/upload";
+
 
 const Assistant = () => {
   const [messages, setMessages] = useState([]);

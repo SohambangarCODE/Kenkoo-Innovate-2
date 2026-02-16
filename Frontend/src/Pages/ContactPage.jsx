@@ -24,7 +24,7 @@ function ContactPage() {
         // Remove access_key if it exists
         delete object.access_key;
 
-        const res = await fetch("http://localhost:3000/api/contact/submit", {
+        const res = await fetch("https://kenkoo-backend.onrender.com/api/contact/submit", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

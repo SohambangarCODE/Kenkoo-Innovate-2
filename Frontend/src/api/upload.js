@@ -5,7 +5,7 @@ export const uploadReport = async (file) => {
   formData.append("file", file);
 
   const res = await axios.post(
-    "http://localhost:3000/api/upload",
+    "https://kenkoo-backend.onrender.com/api/upload",
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
   );

@@ -35,7 +35,7 @@ const Profile = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/user/upload-photo", {
+      const res = await fetch("https://kenkoo-backend.onrender.com/api/user/upload-photo", {
         method: "POST",
         headers: { 
             "Authorization": `Bearer ${token}`
@@ -57,7 +57,7 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("/api/user", {
+      const res = await fetch("https://kenkoo-backend.onrender.com/api/user", {
         method: "PUT",
         headers: { 
             "Content-Type": "application/json",

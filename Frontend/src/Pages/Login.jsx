@@ -26,7 +26,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-3 sm:px-4 py-6 sm:py-8">
+    <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 px-3 sm:px-4 py-6 sm:py-8 overflow-scroll">
       <div className="w-full max-w-md bg-white rounded-xl sm:rounded-2xl shadow-lg p-5 sm:p-6 md:p-8 border border-gray-100">
         <div className="text-center mb-5 sm:mb-6 md:mb-8">
           <h2 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-800">Welcome Back</h2>

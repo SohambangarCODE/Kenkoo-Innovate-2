@@ -166,7 +166,7 @@ const Assistant = () => {
   return (
     // Main Container: Flex column layout that fills the viewport height minus header
     <motion.div 
-      className="flex flex-col h-[calc(100vh-64px)] sm:h-[calc(100vh-72px)] md:h-[calc(100vh-80px)] bg-gradient-to-b from-gray-50 to-white relative"
+      className="flex flex-col h-full bg-gradient-to-b from-gray-50 to-white relative"
       initial="initial"
       animate="animate"
       variants={pageVariants}
@@ -180,7 +180,7 @@ const Assistant = () => {
           <AnimatePresence>
             {messages.length === 0 && (
               <motion.div 
-                className="flex flex-col items-center justify-center h-[50vh] sm:h-[60vh] text-center text-gray-500 px-4"
+                className="flex flex-col items-center justify-center min-h-[40vh] py-8 text-center text-gray-500 px-4"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}

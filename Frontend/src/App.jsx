@@ -19,7 +19,7 @@ const App = () => {
       <div className="flex flex-col h-full">
         <Navbar />
 
-        <div className="flex-1 overflow-hidden relative bg-gray-50/50">
+        <div className="flex-1 overflow-y-auto relative bg-gray-50/50">
           <Routes>
             <Route path="/" element={<Assistant />} />
             <Route path="/Records" element={<Records />} />

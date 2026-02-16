@@ -20,9 +20,14 @@ app.use("/api/assistant", chatRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", require("./routes/auth.route"));
 
+// Handle undefined API routes explicitly to avoid returning HTML
+app.use("/api/*splat", (req, res) => {
+    res.status(404).json({ message: "API route not found" });
+});
+
 // The "catchall" handler: for any request that doesn't
 // match one above, send back React's index.html file.
-app.get("*", (req, res) => {
+app.get("/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "../../Frontend/dist/index.html"));
 });
 

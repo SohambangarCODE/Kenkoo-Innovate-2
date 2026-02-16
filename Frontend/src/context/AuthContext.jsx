@@ -43,7 +43,15 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (err) {
+        console.error("Login parsing error:", err);
+        console.error("Response text:", text);
+        throw new Error(text || "Server returned invalid response");
+    }
 
     if (!res.ok) {
         throw new Error(data.message || "Login failed");
@@ -61,7 +69,15 @@ export const AuthProvider = ({ children }) => {
       body: JSON.stringify({ name, email, password }),
     });
 
-    const data = await res.json();
+    const text = await res.text();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch (err) {
+        console.error("Signup parsing error:", err);
+        console.error("Response text:", text);
+        throw new Error(text || "Server returned invalid response");
+    }
     
     if (!res.ok) {
         throw new Error(data.message || "Signup failed");

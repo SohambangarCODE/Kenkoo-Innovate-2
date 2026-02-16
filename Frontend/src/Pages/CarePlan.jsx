@@ -9,14 +9,14 @@ const CarePlan = () => {
   ];
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 py-6 px-4 md:py-8 md:px-8">
+    <div className="h-full overflow-y-auto bg-gray-50 py-4 px-3 sm:py-6 sm:px-4 md:py-8 md:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 sm:mb-8 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Daily Care Plan</h1>
+            <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-800">Daily Care Plan</h1>
             <p className="text-gray-500 mt-1 text-sm md:text-base">Your personalized health tasks for today.</p>
           </div>
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-[#1447E6] font-bold text-lg">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-100 flex items-center justify-center text-[#1447E6] font-bold text-base sm:text-lg">
             50%
           </div>
         </div>

@@ -110,7 +110,7 @@ const Profile = () => {
 
   return (
     <motion.div 
-      className="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white py-6 px-4 md:py-8 md:px-8 custom-scrollbar"
+      className="h-full overflow-y-auto bg-gradient-to-b from-gray-50 to-white py-4 px-3 sm:py-6 sm:px-4 md:py-8 md:px-8 custom-scrollbar"
       initial="hidden"
       animate="visible"
       variants={containerVariants}
@@ -119,14 +119,14 @@ const Profile = () => {
         
         {/* Header Section */}
         <motion.div 
-          className="relative rounded-3xl overflow-hidden shadow-2xl mb-6 md:mb-8"
+          className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl mb-4 sm:mb-6 md:mb-8"
           style={{ background: `linear-gradient(135deg, ${PRIMARY_COLOR} 0%, ${SECONDARY_COLOR} 100%)` }}
           variants={itemVariants}
         >
           {/* Decorative blobs */}
           <div className="absolute top-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full filter blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400 opacity-10 rounded-full filter blur-3xl translate-x-1/3 translate-y-1/3"></div>
-          <div className="relative px-6 py-8 md:px-8 md:py-14 text-white flex flex-col md:flex-row items-center md:items-end gap-6">
+          <div className="relative px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-14 text-white flex flex-col md:flex-row items-center md:items-end gap-4 sm:gap-6">
             
             {/* Avatar */}
             <motion.div 
@@ -134,7 +134,7 @@ const Profile = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-white">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-2xl overflow-hidden bg-white">
                 <img 
                   src={user?.profileImage || "https://ui-avatars.com/api/?name=User&background=random"} 
                   alt="Profile" 
@@ -164,25 +164,25 @@ const Profile = () => {
 
             {/* Basic Info */}
             <div className="flex-1 text-center md:text-left mb-2">
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{user?.name || "User Name"}</h1>
-              <p className="text-blue-100 text-lg mt-1 flex items-center justify-center md:justify-start gap-2">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight">{user?.name || "User Name"}</h1>
+              <p className="text-blue-100 text-base sm:text-lg mt-1 flex items-center justify-center md:justify-start gap-2">
                 <i className="ri-mail-line"></i> {user?.email || "email@example.com"}
               </p>
             </div>
 
             {/* Edit Button */}
-            <div className="mb-4 md:mb-2">
+            <div className="mb-2 md:mb-2">
               {!isEditing ? (
                 <motion.button 
                   onClick={() => setIsEditing(true)}
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 py-2.5 bg-white text-[#2a41c2] font-semibold rounded-xl shadow-lg hover:shadow-2xl transition-shadow flex items-center gap-2"
+                  className="px-5 py-2 sm:px-6 sm:py-2.5 bg-white text-[#2a41c2] font-semibold rounded-xl shadow-lg hover:shadow-2xl transition-shadow flex items-center gap-2 text-sm sm:text-base"
                 >
                   <i className="ri-edit-line"></i> Edit Profile
                 </motion.button>
               ) : (
-                <div className="flex gap-3">
+                <div className="flex gap-2 sm:gap-3">
                   <motion.button 
                     onClick={handleCancel}
                     whileHover={{ scale: 1.05 }}
@@ -206,10 +206,10 @@ const Profile = () => {
         </motion.div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           
           {/* Left Column: Personal Stats / Quick Info */}
-          <motion.div className="lg:col-span-1 space-y-6" variants={itemVariants}>
+          <motion.div className="lg:col-span-1 space-y-4 sm:space-y-6" variants={itemVariants}>
             <motion.div 
               className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 hover:shadow-xl transition-shadow"
               whileHover={{ y: -4 }}

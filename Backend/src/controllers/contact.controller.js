@@ -1,4 +1,5 @@
 const Contact = require("../models/contact.model");
+const { sendContactEmail, sendConfirmationEmail } = require("../services/email.service");
 
 exports.submitContact = async (req, res) => {
   try {
@@ -15,7 +16,20 @@ exports.submitContact = async (req, res) => {
       message,
     });
 
+    // Save to database
     await newContact.save();
+
+    // Send email notification to business
+    const emailResult = await sendContactEmail({ name, email, subject, message });
+    
+    if (emailResult.success) {
+      console.log("Contact form email sent successfully");
+      
+      // Optionally send confirmation email to user
+      await sendConfirmationEmail(email, name);
+    } else {
+      console.error("Failed to send email, but contact saved to database");
+    }
 
     res.status(201).json({ message: "Message sent successfully", success: true });
   } catch (error) {

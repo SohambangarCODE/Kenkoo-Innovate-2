@@ -88,7 +88,7 @@ const Profile = () => {
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.5,
+        duration: 0.25,
         when: "beforeChildren",
         staggerChildren: 0.15,
       },
@@ -354,6 +354,7 @@ const Profile = () => {
                           name="email"
                           value={formData.email || ""}
                           onChange={handleChange}
+                          placeholder="Enter email id"
                           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1447E6] focus:border-transparent outline-none transition-all font-medium text-gray-800"
                         />
                       ) : (
@@ -370,7 +371,7 @@ const Profile = () => {
                           name="phone"
                           value={formData.phone || ""}
                           onChange={handleChange}
-                          placeholder="+1 (555) 000-0000"
+                          placeholder="+91 1234567890"
                           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1447E6] focus:border-transparent outline-none transition-all font-medium text-gray-800"
                         />
                       ) : (
@@ -387,7 +388,7 @@ const Profile = () => {
                           name="address"
                           value={formData.address || ""}
                           onChange={handleChange}
-                          placeholder="Street, City, Zip Code"
+                          placeholder="Street, City, pin Code"
                           className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-[#1447E6] focus:border-transparent outline-none transition-all font-medium text-gray-800"
                         />
                       ) : (

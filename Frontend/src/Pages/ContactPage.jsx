@@ -176,7 +176,7 @@ function ContactPage() {
                                 onChange={handleChange}
                                 required
                                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                                placeholder="John Doe"
+                                placeholder="Enter your name"
                             />
                         </div>
                         <div className="group">
@@ -188,7 +188,7 @@ function ContactPage() {
                                 onChange={handleChange}
                                 required
                                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                                placeholder="john@example.com"
+                                placeholder="Enter your email id"
                             />
                         </div>
                     </div>
@@ -202,7 +202,7 @@ function ContactPage() {
                             onChange={handleChange}
                             required
                             className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[#3C53E8] focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
-                            placeholder="How can we help?"
+                            placeholder="Enter your subject"
                         />
                     </div>
 

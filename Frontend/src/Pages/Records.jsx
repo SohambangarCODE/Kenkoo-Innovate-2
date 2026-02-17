@@ -211,7 +211,7 @@ const Records = () => {
         {/* Header */}
         <div className="mb-6 bg-blue-900 text-white p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-lg">
            <div className="relative z-10">
-              <h1 className="text-2xl sm:text-3xl font-bold mb-2">My Reports</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">My Records</h1>
               <p className="text-blue-100 text-sm sm:text-base opacity-90">All your medical records, organized for life.</p>
            </div>
            {/* Decorative circles */}
@@ -220,7 +220,7 @@ const Records = () => {
         </div>
 
          {/* Simulated capabilities tags */}
-                <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6 sm:mt-2 sm:mb-3">
+                <div className="flex flex-wrap justify-center gap-2 mb-2 sm:gap-3 sm:mt-2 sm:mb-3">
                   {["DICOM Integration", "Smart Structuring", "Secure Cloud Storage", "Instant Sharing"].map((tag, i) => (
                     <span key={i} className="px-2.5 py-1 sm:px-3 sm:py-1 bg-gray-100/50 border border-gray-200 rounded-full text-xs font-medium text-gray-600">
                       {tag}
@@ -249,9 +249,9 @@ const Records = () => {
                     <button
                         key={tab}
                         onClick={() => setFilter(tab)}
-                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                        className={`px-2 py-2 sm:px-8 sm:py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                             filter === tab 
-                            ? "bg-[#0B1C4B] text-white shadow-md shadow-blue-900/10" 
+                            ? "bg-blue-900 text-white shadow-md shadow-blue-900/10" 
                             : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
                         }`}
                     >
@@ -332,11 +332,11 @@ const Records = () => {
                     </motion.div>
                 ))
             ) : (
-                <div className="text-center py-20">
+                <div className="text-center py-8">
                     <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
                         <i className="ri-folder-open-line text-2xl text-gray-300"></i>
                     </div>
-                    <h3 className="text-gray-800 font-semibold">No reports found</h3>
+                    <h3 className="text-gray-800 font-semibold">No records found</h3>
                     <p className="text-gray-500 text-sm mt-1">Upload your first medical record to get started.</p>
                 </div>
             )}

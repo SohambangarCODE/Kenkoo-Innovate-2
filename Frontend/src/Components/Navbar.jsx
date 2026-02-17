@@ -126,13 +126,13 @@ function Navbar() {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="relative flex flex-col justify-between w-7 h-5 sm:w-8 sm:h-6 focus:outline-none group"
+              className="relative flex flex-col justify-center gap-2 w-6 h-4 sm:w-8 sm:h-6 focus:outline-none group"
               aria-label="Toggle menu"
             >
               <motion.span
                 className="block h-1 w-full bg-gray-800 rounded-full"
                 animate={
-                  isMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }
+                  isMenuOpen ? { rotate: 45, y: 11 } : { rotate: 0, y: 0 }
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               />
@@ -144,7 +144,7 @@ function Navbar() {
               <motion.span
                 className="block h-1 w-full bg-gray-800 rounded-full"
                 animate={
-                  isMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }
+                  isMenuOpen ? { rotate: -45, y: -11 } : { rotate: 0, y: 0 }
                 }
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               />

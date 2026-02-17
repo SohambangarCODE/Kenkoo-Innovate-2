@@ -1,7 +1,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { PDFParse } = require("pdf-parse");
+const pdf = require("pdf-parse");
 const Tesseract = require("tesseract.js");
 
 const extractText = async (filePath) => {
@@ -9,6 +9,7 @@ const extractText = async (filePath) => {
 
   // ---------- PDF ----------
   if (ext === ".pdf") {
+    const { PDFParse } = pdf;
     const buffer = fs.readFileSync(filePath);
     const parser = new PDFParse({ data: buffer });
     const data = await parser.getText();

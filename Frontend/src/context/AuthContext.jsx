@@ -8,6 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const API_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000/api"
+    : "https://kenkoo-backend.onrender.com/api";
+
   useEffect(() => {
     // Check for token in localStorage on mount
     const checkUser = async () => {
@@ -15,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           // Verify token and get user data
-          const res = await fetch("https://kenkoo-backend.onrender.com/api/user", {
+          const res = await fetch(`${API_URL}/user`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
@@ -37,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await fetch("https://kenkoo-backend.onrender.com/api/auth/login", {
+    const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -63,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signup = async (name, email, password) => {
-    const res = await fetch("https://kenkoo-backend.onrender.com/api/auth/signup", {
+    const res = await fetch(`${API_URL}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),

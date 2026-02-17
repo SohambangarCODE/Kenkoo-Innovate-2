@@ -1,0 +1,47 @@
+const mongoose = require("mongoose");
+
+const RecordSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  title: {
+    type: String,
+    required: true,
+    default: "Medical Record",
+  },
+  fileName: {
+    type: String,
+    required: false,
+  },
+  type: {
+    type: String,
+    enum: ["Lab Report", "Prescription", "Scan", "Bill", "Other"],
+    default: "Other",
+  },
+  provider: {
+    type: String,
+    default: "Unknown Provider",
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  fileUrl: {
+    type: String,
+    required: true,
+  },
+  fileType: {
+    type: String, // e.g. "pdf", "jpg"
+  },
+  analysis: {
+    type: Object, // Store the AI analysis result here
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+module.exports = mongoose.model("Record", RecordSchema);

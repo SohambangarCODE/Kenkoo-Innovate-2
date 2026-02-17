@@ -1,53 +1,358 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Records = () => {
-  const records = [
-    { title: "Blood Test Results", date: "Feb 10, 2026", type: "Lab Report", icon: "ri-file-list-3-line" },
-    { title: "Annual Physical", date: "Jan 15, 2026", type: "Checkup", icon: "ri-stethoscope-line" },
-    { title: "Vaccination Record", date: "Dec 05, 2025", type: "Immunization", icon: "ri-syringe-line" },
-  ];
+  const [records, setRecords] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const [showUploadMenu, setShowUploadMenu] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  
+  // Ref for the hidden file input
+  const fileInputRef = useRef(null);
+  // State to track which category is being uploaded
+  const [selectedType, setSelectedType] = useState(null);
 
+  // const API_URL = "https://kenkoo-backend.onrender.com/api/records"; 
+  const API_URL = window.location.hostname === "localhost" 
+    ? "http://localhost:3000/api/records"
+    : "https://kenkoo-backend.onrender.com/api/records";
+
+  const UPLOAD_URL = window.location.hostname === "localhost"
+    ? "http://localhost:3000/api/assistant/upload"
+    : "https://kenkoo-backend.onrender.com/api/assistant/upload";
+
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
+  const fetchRecords = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      
+      const res = await fetch(API_URL, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      });
+      if (!res.ok) throw new Error("Failed to fetch records");
+      const data = await res.json();
+      setRecords(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error(err);
+      // Fallback for demo if backend not ready/reachable
+      // setRecords(dummyRecords); 
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 1. Handle clicking the menu item -> triggers file input
+  const handleUploadClick = (type) => {
+    setSelectedType(type);
+    setShowUploadMenu(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // 2. Handle file selection -> uploads file
+  const handleFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    await uploadRecord(file, selectedType);
+    
+    // Reset input so same file can be selected again if needed
+    e.target.value = ""; 
+    setSelectedType(null);
+  };
+
+  const uploadRecord = async (file, type) => {
+    try {
+        setUploading(true);
+        const token = localStorage.getItem("token");
+        if (!token) {
+             alert("You are not logged in. Please login to upload.");
+             setUploading(false);
+             return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+        if (type) {
+            formData.append("type", type); // Send the manual type
+        }
+
+        // We use the assistant upload endpoint because it handles the file saving + AI logic
+        // But the backend is now updated to respect req.body.type
+        const res = await fetch(UPLOAD_URL, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        if (!res.ok) throw new Error("Upload failed");
+        
+        // Refresh records to show the new one
+        await fetchRecords();
+
+    } catch (err) {
+        console.error("Upload Error:", err);
+        alert("Failed to upload record. Please try again.");
+    } finally {
+        setUploading(false);
+    }
+  };
+
+
+  // Filter & Search Logic
+  const filteredRecords = records.filter(record => {
+    const matchesFilter = filter === "All" || record.type === filter;
+    const matchesSearch = (record.title && record.title.toLowerCase().includes(search.toLowerCase())) || 
+                          (record.fileName && record.fileName.toLowerCase().includes(search.toLowerCase())) ||
+                          (record.provider && record.provider.toLowerCase().includes(search.toLowerCase()));
+    return matchesFilter && matchesSearch;
+  });
+
+  // Group by Year
+  const groupedRecords = filteredRecords.reduce((acc, record) => {
+    const year = new Date(record.date).getFullYear();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(record);
+    return acc;
+  }, {});
+
+  // Sort years descending
+  const sortedYears = Object.keys(groupedRecords).sort((a, b) => b - a);
+
+  // Helper for date format: "Jan 15, 2026"
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short", day: "numeric", year: "numeric"
+    });
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case "Lab Report": return "ri-flask-line";
+      case "Prescription": return "ri-medicine-bottle-line";
+      case "Scan": return "ri-body-scan-line"; // or ri-pulse-line
+      case "Bill": return "ri-bill-line";
+      default: return "ri-file-text-line";
+    }
+  };
+
+  const getColor = (type) => {
+    switch (type) {
+      case "Lab Report": return "text-blue-600 bg-blue-50";
+      case "Prescription": return "text-red-600 bg-red-50";
+      case "Scan": return "text-purple-600 bg-purple-50";
+      case "Bill": return "text-green-600 bg-green-50";
+      default: return "text-gray-600 bg-gray-50";
+    }
+  };
+  
   return (
-    <div className="h-full overflow-y-auto bg-gray-50 py-4 px-3 sm:py-6 sm:px-4 md:py-8 md:px-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="h-full bg-gray-50 overflow-y-auto w-full relative">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8 min-h-screen flex flex-col">
+        
         {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-gray-800">Health Records</h1>
-          <p className="text-gray-500 mt-1 text-sm md:text-base">Access and manage your medical history.</p>
+        <div className="mb-6 bg-[#0B1C4B] text-white p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-lg">
+           <div className="relative z-10">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2">My Reports</h1>
+              <p className="text-blue-100 text-sm sm:text-base opacity-90">All your medical records, organized for life.</p>
+           </div>
+           {/* Decorative circles */}
+           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+           <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl -ml-5 -mb-5"></div>
         </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          {records.map((record, index) => (
-            <div key={index} className="bg-white p-4 sm:p-5 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-10 h-10 rounded-full bg-blue-50 text-[#1447E6] flex items-center justify-center text-xl">
-                  <i className={record.icon}></i>
+        {/* Search & Filter */}
+        <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2">
+            
+            {/* Search Bar */}
+            <div className="relative mb-4 group">
+                <i className="ri-search-line absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"></i>
+                <input 
+                    type="text"
+                    placeholder="Search reports, labs, scans..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 shadow-sm transition-all"
+                />
+            </div>
+
+            {/* Filter Tabs */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {["All", "Lab Report", "Prescription", "Scan", "Bill"].map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => setFilter(tab)}
+                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+                            filter === tab 
+                            ? "bg-[#0B1C4B] text-white shadow-md shadow-blue-900/10" 
+                            : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                        }`}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+        </div>
+
+        {/* Records Lists */}
+        <div className="flex-1 space-y-6">
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-20">
+                    <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                    <p className="mt-4 text-gray-400 text-sm font-medium">Loading records...</p>
                 </div>
-                <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-md">{record.type}</span>
-              </div>
-              <h3 className="font-bold text-gray-800 text-lg">{record.title}</h3>
-              <p className="text-sm text-gray-500 mt-1 flex items-center gap-1">
-                <i className="ri-calendar-line"></i> {record.date}
-              </p>
-              <button className="mt-4 w-full py-2.5 sm:py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">
-                View Details
-              </button>
-            </div>
-          ))}
-          
-          {/* Upload New Record Card */}
-          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center hover:bg-blue-50/50 hover:border-blue-200 transition-colors cursor-pointer group h-full min-h-[160px] sm:min-h-[180px]">
-            <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-[#1447E6] group-hover:border-blue-200 mb-3 transition-colors">
-              <i className="ri-add-line text-2xl"></i>
-            </div>
-            <h3 className="font-semibold text-gray-700 group-hover:text-[#1447E6]">Upload Record</h3>
-            <p className="text-xs text-gray-400 mt-1">PDF, JPG, or PNG</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+            ) : sortedYears.length > 0 ? (
+                sortedYears.map((year) => (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        key={year}
+                    >
+                        <h3 className="text-sm font-semibold text-gray-400 mb-3 flex items-center gap-2">
+                            {year}
+                            <span className="h-px flex-1 bg-gray-200"></span>
+                        </h3>
+                        <div className="space-y-3">
+                            {groupedRecords[year].map((record) => (
+                                <div 
+                                    key={record._id} 
+                                    onClick={() => {
+                                        const fileLink = window.location.hostname === "localhost" 
+                                            ? `http://localhost:3000${record.fileUrl}`
+                                            : `https://kenkoo-backend.onrender.com${record.fileUrl}`;
+                                        window.open(fileLink, "_blank");
+                                    }}
+                                    className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex items-center gap-4 group cursor-pointer"
+                                >
+                                    {/* Icon */}
+                                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${getColor(record.type)}`}>
+                                        <i className={getIcon(record.type)}></i>
+                                    </div>
+                                    
+                                    {/* Info */}
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="font-semibold text-gray-800 truncate">{record.fileName || record.title}</h4>
+                                        <p className="text-xs text-gray-500 flex items-center gap-1.5 mt-0.5">
+                                            <span className="truncate max-w-[120px]">{record.provider}</span>
+                                            <span className="w-1 h-1 rounded-full bg-gray-300"></span>
+                                            <span>{formatDate(record.date)}</span>
+                                        </p>
+                                    </div>
 
-export default Records
+                                    {/* Status / Badge */}
+                                    {record.type === "Scan" && (
+                                         <span className="hidden sm:inline-block px-2.5 py-1 bg-orange-50 text-orange-600 text-[10px] font-semibold rounded-md uppercase tracking-wide">
+                                            Within range
+                                         </span>
+                                    )}
+
+                                    {/* Type Badge (Mobile/Desktop) */}
+                                    <div className="shrink-0 flex flex-col items-end gap-1">
+                                         <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-lg uppercase">
+                                            {record.fileType || "PDF"}
+                                         </span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+                ))
+            ) : (
+                <div className="text-center py-20">
+                    <div className="bg-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100">
+                        <i className="ri-folder-open-line text-2xl text-gray-300"></i>
+                    </div>
+                    <h3 className="text-gray-800 font-semibold">No reports found</h3>
+                    <p className="text-gray-500 text-sm mt-1">Upload your first medical record to get started.</p>
+                </div>
+            )}
+        </div>
+
+      </div>
+
+      {/* Hidden File Input */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileChange} 
+        style={{ display: "none" }} 
+        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" // Add relevant extensions
+      />
+
+      {/* Uploading Overlay */}
+        <AnimatePresence>
+        {uploading && (
+            <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-50 bg-white/50 backdrop-blur-sm flex items-center justify-center"
+            >
+            <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
+                <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+                <h3 className="text-gray-800 font-semibold">Uploading...</h3>
+                <p className="text-xs text-gray-500">Analyzing document...</p>
+            </div>
+            </motion.div>
+        )}
+        </AnimatePresence>
+
+
+      {/* Floating Upload Button */}
+      <div className="fixed bottom-24 right-6 sm:bottom-10 sm:right-10 z-30">
+        <AnimatePresence>
+            {showUploadMenu && (
+                <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.9 }}
+                    className="absolute bottom-full right-0 mb-3 flex flex-col gap-2 min-w-[180px]"
+                >
+                     {/* Menu Items */}
+                     {[
+                        { label: "Upload Lab Report", icon: "ri-flask-line", color: "bg-blue-500", type: "Lab Report" },
+                        { label: "Upload Prescription", icon: "ri-medicine-bottle-line", color: "bg-teal-500", type: "Prescription" },
+                        { label: "Upload DICOM Scan", icon: "ri-body-scan-line", color: "bg-indigo-500", type: "Scan" },
+                        { label: "Upload Bill", icon: "ri-bill-line", color: "bg-orange-500", type: "Bill" }
+                     ].map((item, idx) => (
+                         <button 
+                            key={idx}
+                            onClick={() => handleUploadClick(item.type)}
+                            className="bg-white text-gray-700 px-4 py-3 rounded-xl shadow-lg border border-gray-100 flex items-center gap-3 hover:bg-gray-50 transition-colors text-sm font-medium whitespace-nowrap"
+                         >
+                            <div className={`w-8 h-8 rounded-lg ${item.color} text-white flex items-center justify-center shrink-0 shadow-sm`}>
+                                <i className={item.icon}></i>
+                            </div>
+                            {item.label}
+                         </button>
+                     ))}
+                </motion.div>
+            )}
+        </AnimatePresence>
+
+        <button 
+            onClick={() => setShowUploadMenu(!showUploadMenu)}
+            className={`shadow-xl transition-all duration-300 flex items-center justify-center ${showUploadMenu ? "bg-red-500 rotate-45" : "bg-[#0B1C4B] hover:bg-blue-900"} text-white w-14 h-14 rounded-full`}
+        >
+            <i className="ri-add-line text-2xl"></i>
+        </button>
+      </div>
+
+    </div>
+  );
+};
+
+export default Records;

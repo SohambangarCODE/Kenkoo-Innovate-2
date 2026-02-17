@@ -6,11 +6,16 @@ import { motion, AnimatePresence } from "framer-motion";
 // const API_CHAT_URL = "/api/assistant/chat";
 // const API_UPLOAD_URL = "/api/upload";
 
-const API_CHAT_URL =
-"https://kenkoo-backend.onrender.com/api/assistant/chat";
+// const API_CHAT_URL = "/api/assistant/chat";
+// const API_UPLOAD_URL = "/api/upload";
 
-const API_UPLOAD_URL =
-"https://kenkoo-backend.onrender.com/api/upload";
+const API_CHAT_URL = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api/assistant/chat"
+  : "https://kenkoo-backend.onrender.com/api/assistant/chat";
+
+const API_UPLOAD_URL = window.location.hostname === "localhost"
+  ? "http://localhost:3000/api/assistant/upload"
+  : "https://kenkoo-backend.onrender.com/api/assistant/upload";
 
 
 const Assistant = () => {
@@ -116,8 +121,19 @@ const Assistant = () => {
     formData.append("message", userPrompt); // <-- send prompt too
 
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Please login to upload files.");
+        setMessages((prev) => [...prev, { role: "assistant", content: "You must be logged in to upload files." }]);
+        setIsLoading(false);
+        return;
+      }
+
       const res = await fetch(API_UPLOAD_URL, {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
         body: formData,
       });
 

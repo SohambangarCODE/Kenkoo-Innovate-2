@@ -10,7 +10,7 @@ const app = express()
 
 // app.use(cors())
 app.use(cors({
-  origin: "https://kenkoo-frontend.onrender.com",
+  origin: ["https://kenkoo-frontend.onrender.com", "http://localhost:5173"],
   credentials: true
 }));
 
@@ -25,11 +25,13 @@ app.get("/", (req, res) => {
 // Serve static files from the Frontend app
 // app.use(express.static(path.join(__dirname, "../../Frontend/dist")));
 
-app.use("/api", uploadRoutes);
+app.use("/api/assistant", uploadRoutes);
 app.use("/api/assistant", chatRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/auth", require("./routes/auth.route"));
+app.use("/api/auth", require("./routes/auth.route"));
 app.use("/api/contact", require("./routes/contact.route"));
+app.use("/api/records", require("./routes/record.route"));
 
 // Handle undefined API routes explicitly to avoid returning HTML
 app.use("/api/*splat", (req, res) => {

@@ -312,7 +312,7 @@ const Records = () => {
 
 
       {/* Floating Upload Button */}
-      <div className="fixed bottom-24 right-6 sm:bottom-10 sm:right-10 z-30">
+      <div className="fixed bottom-6 right-4 sm:bottom-10 sm:right-10 z-30">
         <AnimatePresence>
             {showUploadMenu && (
                 <motion.div 

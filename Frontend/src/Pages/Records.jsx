@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Swal from 'sweetalert2';
 
 const Records = () => {
   const [records, setRecords] = useState([]);
@@ -111,6 +112,50 @@ const Records = () => {
     }
   };
 
+  const handleDelete = async (id, e) => {
+    e.stopPropagation(); // Prevent opening the file when clicking delete
+
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+
+        if (res.ok) {
+          setRecords(records.filter(record => record._id !== id));
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          );
+        } else {
+          throw new Error("Failed to delete");
+        }
+      } catch (err) {
+        console.error("Delete error:", err);
+        Swal.fire(
+          'Error!',
+          'Failed to delete the record.',
+          'error'
+        );
+      }
+    }
+  };
+
 
   // Filter & Search Logic
   const filteredRecords = records.filter(record => {
@@ -164,7 +209,7 @@ const Records = () => {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8 min-h-screen flex flex-col">
         
         {/* Header */}
-        <div className="mb-6 bg-[#0B1C4B] text-white p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-lg">
+        <div className="mb-6 bg-blue-900 text-white p-6 sm:p-8 rounded-3xl relative overflow-hidden shadow-lg">
            <div className="relative z-10">
               <h1 className="text-2xl sm:text-3xl font-bold mb-2">My Reports</h1>
               <p className="text-blue-100 text-sm sm:text-base opacity-90">All your medical records, organized for life.</p>
@@ -273,6 +318,13 @@ const Records = () => {
                                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-[10px] font-bold rounded-lg uppercase">
                                             {record.fileType || "PDF"}
                                          </span>
+                                         <button 
+                                            onClick={(e) => handleDelete(record._id, e)}
+                                            className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                                            title="Delete Record"
+                                         >
+                                            <i className="ri-delete-bin-line"></i>
+                                         </button>
                                     </div>
                                 </div>
                             ))}

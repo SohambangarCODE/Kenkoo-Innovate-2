@@ -33,7 +33,15 @@ JSON Structure:
   "abnormal_values": [],
   "risk_level": "",
   "summary": "",
-  "answer_to_user": ""
+  "answer_to_user": "",
+  "metrics": [
+    { "name": "Hemoglobin", "value": 14.1, "unit": "g/dL", "status": "Normal" },
+    { "name": "Cholesterol", "value": 190, "unit": "mg/dL", "status": "Normal" }
+  ],
+  "recommendations": [
+    "Increase iron intake through leafy greens.",
+    "Maintain regular exercise routine."
+  ]
 }
 
 User Question: ${question || "No question asked"}

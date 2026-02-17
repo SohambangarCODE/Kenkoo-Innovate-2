@@ -12,10 +12,12 @@ import Assistant from "./Pages/Assistant";
 import Login from "./Pages/Login";
 import Signup from "./Pages/Signup";
 import { AuthProvider } from "./context/AuthContext";
+import { ChatProvider } from "./context/ChatContext";
 
 const App = () => {
   return (
     <AuthProvider>
+      <ChatProvider>
       <div className="flex flex-col h-full">
         <Navbar />
 
@@ -34,6 +36,7 @@ const App = () => {
 
         {/* <Footer/> */}
       </div>
+      </ChatProvider>
     </AuthProvider>
   );
 };

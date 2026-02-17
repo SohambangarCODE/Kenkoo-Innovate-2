@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { motion, AnimatePresence } from "framer-motion";
+import { useChat } from "../context/ChatContext"; // Import useChat
 
 // const API_CHAT_URL = "/api/assistant/chat";
 // const API_UPLOAD_URL = "/api/upload";
@@ -19,7 +20,8 @@ const API_UPLOAD_URL = window.location.hostname === "localhost"
 
 
 const Assistant = () => {
-  const [messages, setMessages] = useState([]);
+  const { messages, setMessages } = useChat(); // Use persistent context
+  // const [messages, setMessages] = useState([]); // Removed local state
   const [input, setInput] = useState("");
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);

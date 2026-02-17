@@ -38,6 +38,20 @@ const RecordSchema = new mongoose.Schema({
   analysis: {
     type: Object, // Store the AI analysis result here
   },
+  metrics: [
+    {
+      name: { type: String },
+      value: { type: Number },
+      unit: { type: String },
+      status: { type: String }
+    }
+  ],
+  recommendations: [
+    { type: String }
+  ],
+  summary: {
+    type: String
+  },
   createdAt: {
     type: Date,
     default: Date.now,

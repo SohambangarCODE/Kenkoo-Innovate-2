@@ -49,6 +49,9 @@ const uploadFile = async (req, res) => {
       fileName: req.file.originalname,
       fileType: req.file.mimetype ? req.file.mimetype.split('/')[1] : "pdf", 
       analysis: analysis,
+      metrics: analysis.metrics || [],
+      recommendations: analysis.recommendations || [],
+      summary: analysis.summary || "No summary available."
     });
 
     await newRecord.save();

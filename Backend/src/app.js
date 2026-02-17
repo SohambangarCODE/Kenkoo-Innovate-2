@@ -31,6 +31,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/auth", require("./routes/auth.route"));
 app.use("/api/auth", require("./routes/auth.route"));
 app.use("/api/contact", require("./routes/contact.route"));
+app.use("/api/health", require("./routes/health.route"));
 app.use("/api/records", require("./routes/record.route"));
 
 // Handle undefined API routes explicitly to avoid returning HTML

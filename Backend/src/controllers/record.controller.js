@@ -13,6 +13,32 @@ const getRecords = async (req, res) => {
   }
 };
 
+// @desc    Delete a record
+// @route   DELETE /api/records/:id
+// @access  Private
+const deleteRecord = async (req, res) => {
+  try {
+    const record = await Record.findById(req.params.id);
+
+    if (!record) {
+      return res.status(404).json({ message: "Record not found" });
+    }
+
+    // Check user
+    if (record.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: "User not authorized" });
+    }
+
+    await record.deleteOne();
+
+    res.json({ message: "Record removed" });
+  } catch (error) {
+    console.error("Error deleting record:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 module.exports = {
   getRecords,
+  deleteRecord,
 };

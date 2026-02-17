@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, Link, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
@@ -8,6 +8,7 @@ function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -88,6 +89,11 @@ function Navbar() {
     if (isMenuOpen) {
       setIsMenuOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   const isActivePath = (path) => location.pathname === path;
@@ -212,7 +218,7 @@ function Navbar() {
                     <div className="nav-underline absolute bottom-0 left-0 h-0.5 w-full transform transition-all duration-300 opacity-0 group-hover:opacity-100"></div>
                   </NavLink>
                   <button
-                    onClick={logout}
+                    onClick={handleLogout}
                     className="ml-2 px-4 py-2 rounded-xl bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition-colors border border-red-100"
                   >
                     Logout
@@ -286,7 +292,7 @@ function Navbar() {
                 </NavLink>
                  <button
                   onClick={() => {
-                    logout();
+                    handleLogout();
                     handleLinkClick();
                   }}
                   className="w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 font-medium transition-all duration-300 hover:pl-6 hover:shadow-inner"

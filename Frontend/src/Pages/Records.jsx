@@ -174,6 +174,15 @@ const Records = () => {
            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl -ml-5 -mb-5"></div>
         </div>
 
+         {/* Simulated capabilities tags */}
+                <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mt-6 sm:mt-2 sm:mb-3">
+                  {["DICOM Integration", "Smart Structuring", "Secure Cloud Storage", "Instant Sharing"].map((tag, i) => (
+                    <span key={i} className="px-2.5 py-1 sm:px-3 sm:py-1 bg-gray-100/50 border border-gray-200 rounded-full text-xs font-medium text-gray-600">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
         {/* Search & Filter */}
         <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2">
             

@@ -139,6 +139,10 @@ const Profile = () => {
                   src={user?.profileImage || "https://ui-avatars.com/api/?name=User&background=random"} 
                   alt="Profile" 
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://ui-avatars.com/api/?name=User&background=random";
+                  }}
                 />
               </div>
               {isEditing && (

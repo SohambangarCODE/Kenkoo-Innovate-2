@@ -24,6 +24,29 @@ const Records = () => {
     ? "http://localhost:3000/api/assistant/upload"
     : "https://kenkoo-backend.onrender.com/api/assistant/upload";
 
+  const features = [
+    {
+      icon: "ri-folder-video-fill",
+      title: "DICOM Integration",
+      description: "View and share your CT/MRI scans.",
+    },
+    {
+      icon: "ri-file-chart-fill",
+      title: "Smart Structuring",
+      description: "Organize reports into timelines.",
+    },
+    {
+      icon: "ri-cloud-fill",
+      title: "Secure Cloud Storage",
+      description: "Lifelong, encrypted access.",
+    },
+    {
+      icon: "ri-share-fill",
+      title: "Instant Sharing",
+      description: "Send secure links to doctors.",
+    },
+  ];
+
   useEffect(() => {
     fetchRecords();
   }, []);
@@ -219,16 +242,7 @@ const Records = () => {
            <div className="absolute bottom-0 left-0 w-24 h-24 bg-blue-400/20 rounded-full blur-2xl -ml-5 -mb-5"></div>
         </div>
 
-         {/* Simulated capabilities tags */}
-                <div className="flex flex-wrap justify-center gap-2 mb-2 sm:gap-3 sm:mt-2 sm:mb-3">
-                  {["DICOM Integration", "Smart Structuring", "Secure Cloud Storage", "Instant Sharing"].map((tag, i) => (
-                    <span key={i} className="px-2.5 py-1 sm:px-3 sm:py-1 bg-gray-100/50 border border-gray-200 rounded-full text-xs font-medium text-gray-600">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
 
-        {/* Search & Filter */}
         <div className="sticky top-0 z-20 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2">
             
             {/* Search Bar */}
@@ -342,6 +356,24 @@ const Records = () => {
             )}
         </div>
 
+        {/* Capabilities Grid */}
+        <div className="mt-8 mb-6">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Records Capabilities</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              {features.map((feature, idx) => (
+                <div key={idx} className="bg-white p-4 sm:p-5 border border-gray-100 rounded-2xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 text-2xl shrink-0 shadow-sm">
+                    <i className={feature.icon}></i>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-gray-800 text-base leading-snug mb-1">{feature.title}</span>
+                    <span className="text-gray-500 text-sm leading-snug tracking-tight">{feature.description}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+        </div>
+
       </div>
 
       {/* Hidden File Input */}
@@ -400,6 +432,7 @@ const Records = () => {
                             {item.label}
                          </button>
                      ))}
+                     
                 </motion.div>
             )}
         </AnimatePresence>
